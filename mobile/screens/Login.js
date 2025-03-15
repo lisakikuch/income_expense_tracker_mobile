@@ -1,18 +1,27 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, TextInput, Button} from 'react-native';
+import { Text, TouchableOpacity, TextInput, } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import globalStyles from '../shared/GlobalStyles';
 
 const Login = ({ navigation }) => {
-    return (
-      <View>
+  return (
+    <SafeAreaView>
+      <Text>Login</Text>
+      <Text>Login to access your account</Text>
+      <TextInput placeholder="Your email address" />
+      <TextInput placeholder="Your password" secureTextEntry />
+
+      <TouchableOpacity
+        onPress={() => { }}
+      >
         <Text>Login</Text>
-        <TextInput placeholder="Your email address" />
-        <TextInput placeholder="Your password" secureTextEntry />
-        <Button title="Login" onPress={() => {}} />
-        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-          <Text>Don't have an account yet? Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  };
+      </TouchableOpacity>
+      <Text>Don't have an account yet?</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+        <Text>Sign Up</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+};
 
 export default Login;

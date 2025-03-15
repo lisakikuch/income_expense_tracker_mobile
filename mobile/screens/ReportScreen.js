@@ -71,14 +71,14 @@ const ReportScreen = () => {
 
       {/* Header with Back Button & Month Selector */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
 
-        <Text style={styles.header}>Report</Text>
+        <Text style={styles.header}>Report</Text> */}
 
         {/* Month Selector Button */}
         <TouchableOpacity

@@ -10,7 +10,7 @@ const HomeScreen = () => {
     <View style={styles.container}>
 
       {/* Title */}
-      <Text style={styles.header}>Home</Text>
+      {/* <Text style={styles.header}>Home</Text> */}
 
       {/* Income & Expense Summary*/}
       <View style={styles.summaryContainer}>
