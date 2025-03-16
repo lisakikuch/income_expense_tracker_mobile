@@ -13,7 +13,7 @@ const transactions = [
   { date: "09/17/2025", category: "Grocery", description: "$30.00" },
 ];
 
-export default function TransactionsPage() {
+export default function TransactionsList() {
   return (
     <div className="p-6 max-w-md mx-auto">
       <div className="flex justify-between items-center">
