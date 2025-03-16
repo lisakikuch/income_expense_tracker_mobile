@@ -1,29 +1,37 @@
 import React from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 
-const AddTransaction = () => {
+const transactions = [
+  { date: "09/21/2025", category: "Transportation", details: "TTC Monthly Pass: $128.15" },
+  { date: "09/20/2025", category: "Eating Out", details: "$5.25" },
+  { date: "09/19/2025", category: "Grocery", details: "$15.99" },
+  { date: "09/18/2025", category: "Entertainment & Leisure", details: "Trip to Mexico: $3,000" },
+  { date: "09/17/2025", category: "Medical", details: "Doctor’s consultant fee: $120.49" },
+  { date: "09/17/2023", category: "Eating Out", details: "$50.00" },
+  { date: "09/17/2025", category: "Grocery", details: "$30.00" },
+];
+
+const TransactionList = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Add Transaction</Text>
-
-      <View style={styles.card}>
-        <Text style={styles.subHeader}>Transaction Details</Text>
-
-        <Text style={styles.label}>Type</Text>
-        <TextInput style={styles.input} value="Income" editable={false} />
-
-        <Text style={styles.label}>Amount</Text>
-        <TextInput style={styles.input} value="$0.00" editable={false} />
-
-        <Text style={styles.label}>Category</Text>
-        <TextInput style={styles.input} value="Food" editable={false} />
-
-        <Text style={styles.label}>Date</Text>
-        <TextInput style={styles.input} value="12/08/2023" editable={false} />
-
-        <TouchableOpacity style={styles.button} disabled>
-          <Text style={styles.buttonText}>Add Transaction</Text>
-        </TouchableOpacity>
+      <Text style={styles.header}>Transactions</Text>
+      <Text style={styles.subHeader}>September 2025</Text>
+      
+      <ScrollView style={styles.transactionList}>
+        {transactions.map((transaction, index) => (
+          <View key={index} style={styles.transactionCard}>
+            <Text style={styles.transactionDate}>{transaction.date} - {transaction.category}</Text>
+            <Text style={styles.transactionDetails}>{transaction.details}</Text>
+            <TouchableOpacity style={styles.editButton}>
+              <Text style={styles.editButtonText}>Edit</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+      </ScrollView>
+      
+      <View style={styles.filterButtons}>
+        <TouchableOpacity style={styles.expenseButton}><Text style={styles.filterText}>Expense</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.incomeButton}><Text style={styles.filterText}>Income</Text></TouchableOpacity>
       </View>
     </View>
   );
@@ -39,43 +47,68 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
+    marginBottom: 10,
+  },
+  subHeader: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 15,
+  },
+  transactionList: {
     marginBottom: 20,
   },
-  card: {
+  transactionCard: {
     backgroundColor: "#fff",
-    padding: 20,
+    padding: 15,
     borderRadius: 10,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
-  },
-  subHeader: {
-    fontSize: 18,
-    fontWeight: "bold",
     marginBottom: 10,
   },
-  label: {
+  transactionDate: {
     fontWeight: "bold",
-    marginTop: 10,
   },
-  input: {
-    backgroundColor: "#E9ECEF",
-    padding: 12,
-    borderRadius: 5,
-    marginTop: 5,
+  transactionDetails: {
+    color: "#666",
+    marginBottom: 5,
   },
-  button: {
+  editButton: {
     backgroundColor: "#6a5acd",
-    padding: 15,
+    padding: 8,
     borderRadius: 5,
     alignItems: "center",
-    marginTop: 20,
+    alignSelf: "flex-end",
   },
-  buttonText: {
+  editButtonText: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  filterButtons: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 10,
+    paddingTop: 10,
+  },
+  expenseButton: {
+    backgroundColor: "#8884d8",
+    padding: 12,
+    borderRadius: 5,
+    alignItems: "center",
+    flex: 1,
+  },
+  incomeButton: {
+    backgroundColor: "#6a5acd",
+    padding: 12,
+    borderRadius: 5,
+    alignItems: "center",
+    flex: 1,
+  },
+  filterText: {
     color: "white",
     fontWeight: "bold",
   },
 });
 
-export default AddTransaction;
+export default TransactionList;
