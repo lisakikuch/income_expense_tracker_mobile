@@ -1,7 +1,9 @@
 import React from "react";
+import { Modal, TouchableOpacity } from "react-native";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
+import MonthPicker from 'react-native-month-picker';
 
 const transactions = [
   { date: "09/21/2025", category: "Transportation", description: "TTC Monthly Pass: $128.15" },

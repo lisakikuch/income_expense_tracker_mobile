@@ -2,11 +2,11 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const session = require('express-session');
 
 const connectDB = require('./config/db');
 const transactionRoutes = require('./routes/transactionRoutes');
-const userRoutes = require('./routes/userRoutes');
+// const userRoutes = require('./routes/userRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
@@ -32,15 +32,10 @@ app.use(cors({
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(session({
-    secret: process.env.SESSION_SECRET,  
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false } // Use secure; true in production with HTTPS
-}))
 
 app.use('/transactions', transactionRoutes);
-app.use('/users', userRoutes);
+// app.use('/users', userRoutes);
+app.use('/auth', authRoutes);
 
 app.get('/', (req, res) => {
     res.send('API is running! Welcome to the Expense/Income Tracker.');

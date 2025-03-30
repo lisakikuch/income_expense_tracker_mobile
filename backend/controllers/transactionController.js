@@ -31,19 +31,28 @@ exports.createTransaction = async (req, res) => {
 };
 
 exports.getTransactions = async (req, res) => {
-    const { type, month } = req.query;
+    const { userID, type, month } = req.query;
 
     try {
         let filter = {};
-
+        if (userID) {
+            filter.userID = userID;
+        }
         if (type) {
             filter.type = type;
         };
         if (month) {
-            const startDate = new Date(`${month}-01`);
-            const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
+            const startDate = new Date(month);
+            startDate.setUTCHours(0, 0, 0, 0); // Ensure start date is at UTC midnight
+
+            const endDate = new Date(startDate);
+            endDate.setUTCMonth(startDate.getUTCMonth() + 1);
+            endDate.setUTCHours(0, 0, 0, 0); // Ensure end date is also at UTC midnight
+
             filter.date = { $gte: startDate, $lt: endDate };
         }
+
+        console.log(filter)
 
         const transactions = await Transaction.find(filter).sort({ createdAt: -1 });
         res.status(200).json(transactions);

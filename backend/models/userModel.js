@@ -1,16 +1,22 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, "Email is required"],
         unique: true,
-        trim: true
+        lowercase: true,
+        trim: true,
+        match: [
+          /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        "Please provide a valid email address",  
+        ],
     },
     password: {
         type: String,
-        require: [true, "Password is required"]
+        require: [true, "Password is required"],
+        minlength: [6, "Password must be at least 6 characters long"],
     },
     role: {
         type: String,
@@ -28,10 +34,14 @@ UserSchema.statics.findAndValidate = async function (email, password) {
 
 UserSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
-    this.password = await bcrypt.hash(this.password, 12);
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
     next();
-})
+});
+
+UserSchema.methods.comparePassword = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+};
 
 const User = mongoose.model("User", UserSchema);
-
 module.exports = User;
