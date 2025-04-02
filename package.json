@@ -4,6 +4,7 @@
     "@react-navigation/stack": "^7.1.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "expo-secure-store": "^14.0.1",
     "express": "^4.21.2",
     "mongoose": "^8.10.0",
     "nodemon": "^3.1.9",

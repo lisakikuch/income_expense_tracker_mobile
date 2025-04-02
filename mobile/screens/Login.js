@@ -1,18 +1,42 @@
-import React from 'react';
-import { Text, TouchableOpacity, TextInput, } from 'react-native';
+import React, { useState } from 'react';
+import { Text, TouchableOpacity, TextInput, Alert, } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import globalStyles from '../shared/GlobalStyles';
+import { useAuth } from '../contexts/AuthContext';
 
 const Login = ({ navigation }) => {
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { login } = useAuth();
+
+  const handleLogin = async () => {
+    try {
+      await login(email, password);
+    } catch (err) {
+      Alert.alert("Email or Password is invalid");
+    }
+  };
+
   return (
     <SafeAreaView>
       <Text>Login</Text>
       <Text>Login to access your account</Text>
-      <TextInput placeholder="Your email address" />
-      <TextInput placeholder="Your password" secureTextEntry />
+      <TextInput
+        value={email}
+        onChangeText={setEmail}
+        placeholder="Your email address"
+        autoCapitalize='none'
+      />
+      <TextInput
+        value={password}
+        onChangeText={setPassword}
+        placeholder="Your password"
+        autoCapitalize='none'
+        secureTextEntry
+      />
 
       <TouchableOpacity
-        onPress={() => { }}
+        onPress={()=>handleLogin()}
       >
         <Text>Login</Text>
       </TouchableOpacity>

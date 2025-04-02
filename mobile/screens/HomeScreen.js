@@ -2,15 +2,15 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../contexts/AuthContext';
 
 const HomeScreen = () => {
+  const { user, logout } = useAuth();
+  
   const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
-
-      {/* Title */}
-      {/* <Text style={styles.header}>Home</Text> */}
 
       {/* Income & Expense Summary*/}
       <View style={styles.summaryContainer}>
