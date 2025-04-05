@@ -1,93 +1,50 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList, } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList } from "react-native";
 import { PieChart } from "react-native-chart-kit";
-import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
 const ReportScreen = () => {
-  const navigation = useNavigation();
-  const [viewType, setViewType] = useState("Expense"); // Toggle between Expense & Income
+  const [viewType, setViewType] = useState("Expense");
   const [selectedMonth, setSelectedMonth] = useState("September 2025");
-  const [modalVisible, setModalVisible] = useState(false); // Controls the month selector
+  const [modalVisible, setModalVisible] = useState(false);
 
   const months = [
-    "January 2025",
-    "February 2025",
-    "March 2025",
-    "April 2025",
-    "May 2025",
-    "June 2025",
-    "July 2025",
-    "August 2025",
-    "September 2025",
-    "October 2025",
-    "November 2025",
-    "December 2025",
+    "January 2025", "February 2025", "March 2025", "April 2025", "May 2025", "June 2025",
+    "July 2025", "August 2025", "September 2025", "October 2025", "November 2025", "December 2025"
   ];
 
+  const totalIncome = 3000;
+  const totalExpense = 1500;
+
   const expenseData = [
-    {
-      name: "Education",
-      amount: 300,
-      color: "blue",
-      legendFontColor: "black",
-      legendFontSize: 14,
-    },
-    {
-      name: "Eating-out",
-      amount: 500,
-      color: "pink",
-      legendFontColor: "black",
-      legendFontSize: 14,
-    },
-    {
-      name: "Medical",
-      amount: 700,
-      color: "green",
-      legendFontColor: "black",
-      legendFontSize: 14,
-    },
+    { name: "Education", amount: 300, color: "#4A90E2", legendFontColor: "black", legendFontSize: 14 },
+    { name: "Eating-out", amount: 500, color: "#F28B82", legendFontColor: "black", legendFontSize: 14 },
+    { name: "Medical", amount: 700, color: "#34A853", legendFontColor: "black", legendFontSize: 14 },
   ];
 
   const incomeData = [
-    {
-      name: "Salary",
-      amount: 2500,
-      color: "blue",
-      legendFontColor: "black",
-      legendFontSize: 14,
-    },
-    {
-      name: "Other",
-      amount: 500,
-      color: "purple",
-      legendFontColor: "black",
-      legendFontSize: 14,
-    },
+    { name: "Salary", amount: 2500, color: "#4A90E2", legendFontColor: "black", legendFontSize: 14 },
+    { name: "Other", amount: 500, color: "#A67EBF", legendFontColor: "black", legendFontSize: 14 },
   ];
 
   return (
     <View style={styles.container}>
+      {/* Month Selector */}
+      <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.calendarButton}>
+        <Ionicons name="calendar-outline" size={24} color="black" />
+        <Text style={styles.monthText}>{selectedMonth}</Text>
+      </TouchableOpacity>
 
-      {/* Header with Back Button & Month Selector */}
-      <View style={styles.headerContainer}>
-        {/* <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
-
-        <Text style={styles.header}>Report</Text> */}
-
-        {/* Month Selector Button */}
-        <TouchableOpacity
-          onPress={() => setModalVisible(true)}
-          style={styles.calendarButton}
-        >
-          <Ionicons name="calendar-outline" size={24} color="black" />
-          <Text style={styles.monthText}>{selectedMonth}</Text>
-        </TouchableOpacity>
+      {/* Total Income/Expense */}
+      <View style={styles.totalContainer}>
+        <View style={styles.totalBox}>
+          <Text style={styles.totalLabel}>
+            {viewType === "Expense" ? "Total Expense" : "Total Income"}
+          </Text>
+          <Text style={viewType === "Expense" ? styles.expenseAmount : styles.incomeAmount}>
+            {viewType === "Expense" ? `- $${totalExpense.toFixed(2)}` : `+ $${totalIncome.toFixed(2)}`}
+          </Text>
+        </View>
       </View>
 
       {/* Pie Chart */}
@@ -108,43 +65,23 @@ const ReportScreen = () => {
         />
       </View>
 
-      {/* Toggle between Expense & Income */}
+      {/* Expense and Income Toggle */}
       <View style={styles.toggleContainer}>
         <TouchableOpacity
-          style={[
-            styles.toggleButton,
-            viewType === "Expense" && styles.activeButton,
-          ]}
+          style={[styles.toggleButton, viewType === "Expense" && styles.activeButton]}
           onPress={() => setViewType("Expense")}
         >
-          <Text
-            style={[
-              styles.toggleText,
-              viewType === "Expense" && styles.activeText,
-            ]}
-          >
-        Expense
-          </Text>
+          <Text style={[styles.toggleText, viewType === "Expense" && styles.activeText]}>Expense</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[
-            styles.toggleButton,
-            viewType === "Income" && styles.activeButton,
-          ]}
+          style={[styles.toggleButton, viewType === "Income" && styles.activeButton]}
           onPress={() => setViewType("Income")}
         >
-          <Text
-            style={[
-              styles.toggleText,
-              viewType === "Income" && styles.activeText,
-            ]}
-          >
-            Income
-          </Text>
+          <Text style={[styles.toggleText, viewType === "Income" && styles.activeText]}>Income</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Month Selector */}
+      {/* Month Selector Modal */}
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -164,10 +101,7 @@ const ReportScreen = () => {
                 </TouchableOpacity>
               )}
             />
-            <TouchableOpacity
-              onPress={() => setModalVisible(false)}
-              style={styles.cancelButton}
-            >
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.cancelButton}>
               <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
           </View>
@@ -182,63 +116,98 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     padding: 20,
-    alignItems: "center",
-    justifyContent: "center",
   },
-
-  headerContainer: {
-    flexDirection: "row",
+  header: {
+    padding: 15,
+    backgroundColor: "#6a5acd",
+    borderRadius: 10,
+    marginBottom: 10,
     alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    marginBottom: 20,
   },
-  backButton: { padding: 10 },
-  header: { fontSize: 22, fontWeight: "bold", textAlign: "center", flex: 1 },
-  calendarButton: { flexDirection: "row", alignItems: "center", padding: 10 },
-  monthText: { fontSize: 16, marginLeft: 5 },
-
-  chartContainer: { alignItems: "center", marginBottom: 20 },
-
+  headerText: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  totalContainer: {
+    marginVertical: 20,
+    alignItems: "center",
+  },
+  totalBox: {
+    backgroundColor: "#F0F0F0",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    width: "80%",
+  },
+  totalLabel: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  expenseAmount: {
+    fontSize: 24,
+    color: "#E57373",
+  },
+  incomeAmount: {
+    fontSize: 24,
+    color: "#4CAF50",
+  },
   toggleContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 20,
+    marginVertical: 20,
   },
   toggleButton: {
-    padding: 10,
-    marginHorizontal: 10,
-    borderRadius: 5,
-    backgroundColor: "#E0E0E0",
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: "#4A90E2",
+    marginHorizontal: 5,
   },
-  activeButton: { backgroundColor: "#4A90E2" },
-  toggleText: { fontSize: 16 },
-  activeText: { color: "#fff", fontWeight: "bold" },
-
+  activeButton: {
+    backgroundColor: "#6a5acd",
+  },
+  toggleText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  chartContainer: {
+    marginBottom: 20,
+  },
+  calendarButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  monthText: {
+    fontSize: 16,
+    marginLeft: 5,
+  },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
-    width: 300,
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     padding: 20,
+    marginHorizontal: 30,
     borderRadius: 10,
-    alignItems: "center",
   },
-  modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
   monthOption: {
     padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "gray",
-    width: "100%",
-    alignItems: "center",
   },
-  monthOptionText: { fontSize: 16 },
-  cancelButton: { marginTop: 10, padding: 10 },
-  cancelText: { fontSize: 16, color: "red", fontWeight: "bold" },
+  cancelButton: {
+    marginTop: 10,
+  },
+  cancelText: {
+    color: "red",
+    textAlign: "center",
+  },
 });
 
 export default ReportScreen;

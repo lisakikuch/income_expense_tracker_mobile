@@ -1,45 +1,65 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 
-const TransactionDetails = () => {
+const TransactionDetails = ({ route }) => {
+  // Safely access the transaction data
+  const transaction = route.params?.transaction || {
+    date: "N/A",
+    category: "N/A",
+    description: "N/A",
+    amount: "N/A",
+  };
+
+  const [description, setDescription] = useState(transaction.description);
+  const [amount, setAmount] = useState(transaction.amount);
+
+  const handleUpdate = () => {
+    alert(`Updated transaction: ${description} - ${amount}`);
+  };
+
+  const handleDelete = () => {
+    alert("Transaction deleted!");
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Transaction Details</Text>
-
       <View style={styles.card}>
-        <Text style={styles.title}>Transaction Title</Text>
+        <Text style={styles.title}>Transaction Details</Text>
 
         <View style={styles.row}>
           <Text style={styles.label}>Date</Text>
-          <Text>3/11/2025</Text>
+          <Text>{transaction.date}</Text>
         </View>
 
         <View style={styles.row}>
-          <Text style={styles.label}>Type</Text>
-          <Text>Expense</Text>
+          <Text style={styles.label}>Category</Text>
+          <Text>{transaction.category}</Text>
+        </View>
+
+        <View style={styles.row}>
+          <Text style={styles.label}>Description</Text>
+          <TextInput
+            style={styles.input}
+            value={description}
+            onChangeText={setDescription}
+          />
         </View>
 
         <View style={styles.row}>
           <Text style={styles.label}>Amount</Text>
-          <Text>$50</Text>
+          <TextInput
+            style={styles.input}
+            value={amount}
+            onChangeText={setAmount}
+          />
         </View>
 
-        <View style={styles.row}>
-          <Text style={styles.label}>Categories</Text>
-          <Text>Education</Text>
-        </View>
-
-        <View style={styles.notes}>
-          <Text style={styles.label}>Notes</Text>
-          <Text style={styles.noteText}>Further details about the transaction can go here.</Text>
-        </View>
-
-        <TouchableOpacity style={styles.updateButton}>
-          <Text style={styles.buttonText}>✏️ Update</Text>
+        <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
+          <Text style={styles.buttonText}>Update</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.deleteButton}>
-          <Text style={styles.buttonText}>🗑 Delete</Text>
+        <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+          <Text style={styles.buttonText}>Delete</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -51,12 +71,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#F8F9FA",
-  },
-  header: {
-    fontSize: 22,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 20,
   },
   card: {
     backgroundColor: "#fff",
@@ -80,11 +94,12 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: "bold",
   },
-  notes: {
-    marginBottom: 20,
-  },
-  noteText: {
-    color: "#666",
+  input: {
+    backgroundColor: "#E9ECEF",
+    padding: 12,
+    borderRadius: 5,
+    marginTop: 5,
+    marginBottom: 10,
   },
   updateButton: {
     backgroundColor: "#6a5acd",

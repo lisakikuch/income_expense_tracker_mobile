@@ -1,24 +1,21 @@
 import React from 'react';
-import { TouchableOpacity, View, Text } from 'react-native'
+import { TouchableOpacity, View, Text } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAuth } from '../contexts/AuthContext';
-
 import globalStyles from '../shared/GlobalStyles';
-
-// Screens
-import HomeScreen from '../screens/HomeScreen';
+import TransactionList from '../screens/TransactionList';
 import ReportScreen from '../screens/ReportScreen';
 import Welcome from '../screens/Welcome';
 import Login from '../screens/Login';
-import SignUp from '../screens/SignUp'
+import SignUp from '../screens/SignUp';
+import AddTransaction from '../screens/AddTransaction';
+import TransactionDetails from '../screens/TransactionDetails';
 
-// Create navigators
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Stack navigator handling flows before authentication
 const AuthStack = () => {
     return (
         <View style={globalStyles.container}>
@@ -28,10 +25,9 @@ const AuthStack = () => {
                 <Stack.Screen component={SignUp} name='SignUp' />
             </Stack.Navigator>
         </View>
-    )
+    );
 };
 
-// Tab navigator for handling flows after authentication
 const MainTabs = () => {
     const { logout } = useAuth();
 
@@ -42,7 +38,7 @@ const MainTabs = () => {
     return (
         <View style={globalStyles.container}>
             <Tab.Navigator
-                initialRouteName="Home"
+                initialRouteName="TransactionList"
                 screenOptions={{
                     headerTitleAlign: 'center',
                     headerRight: () => (
@@ -53,12 +49,15 @@ const MainTabs = () => {
                     headerStyle: globalStyles.headerContainer,
                     headerTitleStyle: globalStyles.headerTitle,
                 }}>
-                <Tab.Screen component={HomeScreen} name="Home" />
-                <Tab.Screen component={ReportScreen} name="Report" />
+                <Tab.Screen name="TransactionList" component={TransactionList} />
+                <Tab.Screen name="AddTransaction" component={AddTransaction} />
+                <Tab.Screen name="TransactionDetails" component={TransactionDetails} />
+                <Tab.Screen name="Report" component={ReportScreen} />
             </Tab.Navigator>
         </View>
     );
 };
+
 
 // Combine the two navigators
 const AppNavigator = () => {

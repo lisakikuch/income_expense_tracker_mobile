@@ -4,7 +4,6 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-nativ
 const AddTransaction = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Add Transaction</Text>
 
       <View style={styles.card}>
         <Text style={styles.subHeader}>Transaction Details</Text>
