@@ -3,23 +3,59 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'reac
 import CheckBox from '@react-native-community/checkbox';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { API_URL } from '@env';
+import axios from 'axios';
 
 const SignUp = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);  // Corrected state
 
-  const handleSignUp = () => {
-    if (!acceptedTerms) {
-      Alert.alert("Error", "Please agree to the Terms & Conditions");
+  const handleSignUp = async () => {
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      Alert.alert("Invalid Email Format");
       return;
     }
+
+    if (password.length < 6) {
+      Alert.alert("Password must be at least 6 characters long");
+    }
+
     if (password !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match");
       return;
     }
-    Alert.alert("Success", "Account created successfully!");
+
+    if (!acceptedTerms) {
+      Alert.alert("Error", "Please agree to the Terms & Conditions");
+      return;
+    }
+
+    try {
+
+      const response = await axios.post(`${API_URL}/auth/register`, {
+        email,
+        password,
+      });
+
+      if (response.status === 201) {
+        Alert.alert("Success", "Account created successfully!");
+        navigation.navigate('Login');
+      }
+
+    } catch (err) {
+      console.error("Sign Up Error: ", err.response?.data || err.message);
+      Alert.alert("Sign Up Failed", err.response?.data?.message || "Something went wrong");
+
+    } finally {
+      setIsLoading(false);
+    }
+
   };
 
   return (
@@ -63,7 +99,7 @@ const SignUp = ({ navigation }) => {
       </View>
 
       {/* Fixed Checkbox */}
-      <View style={styles.checkboxContainer}>
+      {/* <View style={styles.checkboxContainer}>
         <CheckBox
           value={acceptedTerms}
           onValueChange={setAcceptedTerms}
@@ -72,15 +108,20 @@ const SignUp = ({ navigation }) => {
         <Text style={styles.checkboxLabel}>
           I agree with Terms & Conditions
         </Text>
-      </View>
+      </View> */}
 
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleSignUp}
+      >
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
 
       <Text style={styles.footerText}>
         Already registered?{" "}
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Login")}
+        >
           <Text style={styles.linkText}>Log In</Text>
         </TouchableOpacity>
       </Text>

@@ -6,6 +6,7 @@ module.exports = function(api) {
       ['module:react-native-dotenv', {
         "moduleName": "@env",
         "path": ".env",
+        // Make sure to remove this part
         "safe": false,
         "allowUndefined": true
       }]
