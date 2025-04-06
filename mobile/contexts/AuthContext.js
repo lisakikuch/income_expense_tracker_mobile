@@ -27,9 +27,9 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post(`${API_URL}/auth/login`, { email, password });
+            const res = await axios.post(`${API_URL}/auth/login`, { email, password });
 
-            const { user, token } = response.data;
+            const { user, token } = res.data;
 
             await SecureStore.setItemAsync('jwtToken', token);
             await SecureStore.setItemAsync('userData', JSON.stringify(user));

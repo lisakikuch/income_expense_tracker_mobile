@@ -18,13 +18,13 @@ const Tab = createBottomTabNavigator();
 
 const AuthStack = () => {
     return (
-        <View style={globalStyles.container}>
+        
             <Stack.Navigator initialRouteName="Welcome" screenOptions={{ headerShown: false }}>
                 <Stack.Screen component={Welcome} name="Welcome" />
                 <Stack.Screen component={Login} name="Login" />
                 <Stack.Screen component={SignUp} name='SignUp' />
             </Stack.Navigator>
-        </View>
+        
     );
 };
 
@@ -36,7 +36,7 @@ const MainTabs = () => {
     };
 
     return (
-        <View style={globalStyles.container}>
+        
             <Tab.Navigator
                 initialRouteName="TransactionList"
                 screenOptions={{
@@ -54,7 +54,7 @@ const MainTabs = () => {
                 <Tab.Screen name="TransactionDetails" component={TransactionDetails} />
                 <Tab.Screen name="Report" component={ReportScreen} />
             </Tab.Navigator>
-        </View>
+        
     );
 };
 
