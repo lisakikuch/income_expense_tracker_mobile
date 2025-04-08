@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+// import CheckBox from '@react-native-community/checkbox';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { API_URL } from '@env';
@@ -9,9 +9,9 @@ import axios from 'axios';
 const SignUp = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [acceptedTerms, setAcceptedTerms] = useState(false);  // Corrected state
+  const [acceptedTerms, setAcceptedTerms] = useState(false); 
 
   const handleSignUp = async () => {
 
@@ -37,13 +37,14 @@ const SignUp = ({ navigation }) => {
     }
 
     try {
+      setIsLoading(true);
 
-      const response = await axios.post(`${API_URL}/auth/register`, {
+      const res = await axios.post(`${API_URL}/auth/register`, {
         email,
         password,
       });
 
-      if (response.status === 201) {
+      if (res.status === 201) {
         Alert.alert("Success", "Account created successfully!");
         navigation.navigate('Login');
       }
@@ -56,6 +57,22 @@ const SignUp = ({ navigation }) => {
       setIsLoading(false);
     }
 
+  };
+
+  const CustomCheckbox = ({ value, onValueChange }) => {
+    return (
+      <TouchableOpacity
+        onPress={() => onValueChange(!value)}
+        style={{
+          width: 24,
+          height: 24,
+          borderWidth: 2,
+          borderColor: '#6a5acd',
+          backgroundColor: value ? '#6a5acd' : 'white',
+          marginRight: 8,
+        }}
+      />
+    );
   };
 
   return (
@@ -109,13 +126,23 @@ const SignUp = ({ navigation }) => {
           I agree with Terms & Conditions
         </Text>
       </View> */}
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <CustomCheckbox value={acceptedTerms} onValueChange={setAcceptedTerms} />
+        <Text>I agree with</Text>
+        <TouchableOpacity>
+          <Text> Terms & Conditions</Text>
+        </TouchableOpacity>
+      </View>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleSignUp}
-      >
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </TouchableOpacity>
+      {isLoading ? (<ActivityIndicator />) :
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSignUp}
+        >
+          <Text style={styles.buttonText}>Sign Up</Text>
+        </TouchableOpacity>
+      }
 
       <Text style={styles.footerText}>
         Already registered?{" "}

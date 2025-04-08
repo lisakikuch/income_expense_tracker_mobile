@@ -15,16 +15,17 @@ import TransactionDetails from '../screens/TransactionDetails';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+const TransactionStack = createStackNavigator();
 
 const AuthStack = () => {
     return (
-        
-            <Stack.Navigator initialRouteName="Welcome" screenOptions={{ headerShown: false }}>
-                <Stack.Screen component={Welcome} name="Welcome" />
-                <Stack.Screen component={Login} name="Login" />
-                <Stack.Screen component={SignUp} name='SignUp' />
-            </Stack.Navigator>
-        
+
+        <Stack.Navigator initialRouteName="Welcome" screenOptions={{ headerShown: false }}>
+            <Stack.Screen component={Welcome} name="Welcome" />
+            <Stack.Screen component={Login} name="Login" />
+            <Stack.Screen component={SignUp} name='SignUp' />
+        </Stack.Navigator>
+
     );
 };
 
@@ -36,28 +37,42 @@ const MainTabs = () => {
     };
 
     return (
-        
-            <Tab.Navigator
-                initialRouteName="TransactionList"
-                screenOptions={{
-                    headerTitleAlign: 'center',
-                    headerRight: () => (
-                        <TouchableOpacity onPress={handleLogout} style={globalStyles.headerRightButton}>
-                            <Text>Logout</Text>
-                        </TouchableOpacity>
-                    ),
-                    headerStyle: globalStyles.headerContainer,
-                    headerTitleStyle: globalStyles.headerTitle,
-                }}>
-                <Tab.Screen name="TransactionList" component={TransactionList} />
-                <Tab.Screen name="AddTransaction" component={AddTransaction} />
-                <Tab.Screen name="TransactionDetails" component={TransactionDetails} />
-                <Tab.Screen name="Report" component={ReportScreen} />
-            </Tab.Navigator>
-        
+
+        <Tab.Navigator
+            initialRouteName="TransactionList"
+            screenOptions={{
+                headerTitleAlign: 'center',
+                headerRight: () => (
+                    <TouchableOpacity onPress={handleLogout} style={globalStyles.headerRightButton}>
+                        <Text>Logout</Text>
+                    </TouchableOpacity>
+                ),
+                headerStyle: globalStyles.headerContainer,
+                headerTitleStyle: globalStyles.headerTitle,
+            }}>
+            <Tab.Screen name="TransactionList" component={TransactionStackScreen} options={{ title: "Transaction List" }} />
+            <Tab.Screen name="Report" component={ReportScreen} options={{ title: "Report" }} />
+            <Tab.Screen name="AddTransaction" component={AddTransaction} options={{ title: "Add Transaction" }} />
+        </Tab.Navigator>
     );
 };
 
+const TransactionStackScreen = () => {
+    return (
+        <TransactionStack.Navigator screenOptions={{ headerShown: false }}>
+            <TransactionStack.Screen
+                name="TransactionList"
+                component={TransactionList}
+                options={{ title: "Transaction List" }}
+            />
+            <TransactionStack.Screen
+                name="TransactionDetails"
+                component={TransactionDetails}
+                options={{ title: "Transaction Details" }}
+            />
+        </TransactionStack.Navigator>
+    );
+};
 
 // Combine the two navigators
 const AppNavigator = () => {

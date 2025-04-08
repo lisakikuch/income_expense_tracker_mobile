@@ -1,7 +1,137 @@
-import React from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Platform,
+  Alert
+} from "react-native";
+
+import { useAuth } from "../contexts/AuthContext";
+import { API_URL } from '@env';
+
+import axios from "axios";
+// import DateTimePicker from '@react-native-community/datetimepicker';
+// import { Dropdown } from 'react-native-element-dropdown';
 
 const AddTransaction = () => {
+
+  // Logged in user info + token
+  const { user, token } = useAuth();
+  console.log("User: ", user);
+  console.log("Token: ", token);
+
+  // Extract the user ID from the user object
+  const userId = user?._id;
+
+  // Transaction details
+  const [transactionType, setTransactionType] = useState(null);
+  const [transactionAmount, setTransactionAmount] = useState("");
+  const [transactionCategory, setTransactionCategory] = useState(null);
+  const [transactionDate, setTransactionDate] = useState(new Date());
+  const [transactionNote, setTransactionNote] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  // Display activity indicator while loading
+  const [isLoading, setIsLoading] = useState(false);
+
+  const TRANSACTIONTYPES = ["Expense", "Income"];
+  const formattedTransactionTypes = TRANSACTIONTYPES.map((item) => ({
+    label: item,
+    value: item
+  }));
+
+  const INCOMECATEGORIES = [
+    "Salary",
+    "Bonus",
+    "Freelance",
+    "Investment Returns",
+    "Rental Income",
+    "Business Income",
+    "Gift",
+    "Refunds/Reimbursements",
+    "Other Income"];
+  const formattedIncomeCategories = INCOMECATEGORIES.map((item) => ({
+    label: item,
+    value: item
+  }));
+
+  const EXPENSECATEGORIES = [
+    "Housing",
+    "Utilities",
+    "Groceries",
+    "Dining Out",
+    "Transportation",
+    "Entertainment",
+    "Healthcare",
+    "Education",
+    "Personal Care",
+    "Shopping", "Travel",
+    "Debt Payments",
+    "Savings & Investments",
+    "Donations",
+    "Other Expenses"
+  ];
+  const formattedExpenseCategories = EXPENSECATEGORIES.map((item) => ({
+    label: item,
+    value: item
+  }));
+
+  const handleAddTransaction = async () => {
+    console.log("Submitting form...");
+
+    // Input validation
+    // if (!transactionType || !transactionAmount || !transactionCategory || !transactionDate) {
+    //   Alert.alert("Validation Error", "Please fill out all required fields.");
+    //   return;
+    // }
+
+    // if (isNaN(transactionAmount) || Number(transactionAmount) <= 0) {
+    //   Alert.alert("Validation Error", "Please enter a valid amount greater than 0.");
+    //   return;
+    // }
+
+    try {
+      setIsLoading(true);
+
+      // Need to update body after fixing the dropdown and calendar
+      const res = await axios.post(
+        `${API_URL}/transactions/`,
+        {
+          userID: userId,
+          type: "Expense",
+          amount: parseFloat(transactionAmount),
+          category: "Housing",
+          date: new Date("2025-04-07").toISOString(),
+          note: transactionNote
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      if (res.status === 201) {
+        Alert.alert("Success", "Transaction added successfully!");
+
+        setTransactionType(null);
+        setTransactionAmount("");
+        setTransactionCategory(null);
+        setTransactionDate(new Date());
+        setTransactionNote("");
+      }
+
+    } catch (err) {
+      console.error("Error while adding transaction: ", err.response?.data || err.message);
+      Alert.alert("Adding transaction failed", err.response?.data?.message || "Something went wrong");
+
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <View style={styles.container}>
 
@@ -9,20 +139,77 @@ const AddTransaction = () => {
         <Text style={styles.subHeader}>Transaction Details</Text>
 
         <Text style={styles.label}>Type</Text>
-        <TextInput style={styles.input} value="Income" editable={false} />
+        {/* <TextInput style={styles.input} value="Income" editable={false} /> */}
+        {/* <Dropdown
+          data={formattedTransactionTypes}
+          labelField="label"
+          valueField="value"
+          value={transactionType}
+          onChange={(item) => {
+            setTransactionType(item.value);
+            setTransactionCategory(null);
+          }}
+          placeholder="Select Type"
+        /> */}
 
         <Text style={styles.label}>Amount</Text>
-        <TextInput style={styles.input} value="$0.00" editable={false} />
+        <TextInput
+          style={styles.input}
+          keyboardType="decimal-pad"
+          value={transactionAmount}
+          onChangeText={setTransactionAmount}
+          placeholder="Enter Amount"
+        />
 
         <Text style={styles.label}>Category</Text>
-        <TextInput style={styles.input} value="Food" editable={false} />
+        {/* <TextInput style={styles.input} value="Food" editable={false} /> */}
+        {/* <Dropdown
+          data={transactionType === "Income" ? formattedIncomeCategories : formattedExpenseCategories}
+          labelField="label"
+          valueField="value"
+          value={transactionCategory}
+          onChange={(item) => setTransactionCategory(item.value)}
+          placeholder="Select Category"
+          disabled={!transactionType}
+        /> */}
 
         <Text style={styles.label}>Date</Text>
-        <TextInput style={styles.input} value="12/08/2023" editable={false} />
-
-        <TouchableOpacity style={styles.button} disabled>
-          <Text style={styles.buttonText}>Add Transaction</Text>
+        {/* <TextInput style={styles.input} value="12/08/2023" editable={false} /> */}
+        {/* <TouchableOpacity
+          style={styles.input}
+          onPress={() => setShowDatePicker(true)}
+        >
+          <Text>{transactionDate.toLocaleDateString()}</Text>
         </TouchableOpacity>
+        {showDatePicker && (
+          <DateTimePicker
+            value={transactionDate}
+            mode="date"
+            display={Platform.OS === "ios" ? "spinner" : "default"}
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(false);
+              if (selectedDate) setTransactionDate(selectedDate);
+            }}
+          />
+        )} */}
+
+        <Text style={styles.label}>Note (Optional)</Text>
+        <TextInput
+          style={styles.input}
+          value={transactionNote}
+          onChangeText={setTransactionNote}
+          placeholder="Add a Note"
+        />
+
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <TouchableOpacity
+            onPress={handleAddTransaction}
+            style={styles.button}>
+            <Text style={styles.buttonText}>Add Transaction</Text>
+          </TouchableOpacity>)
+        }
       </View>
     </View>
   );

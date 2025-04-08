@@ -23,13 +23,13 @@ const TransactionList = () => {
   const [selectedMonth, setSelectedMonth] = useState("September 2025");
   const [modalVisible, setModalVisible] = useState(false);
 
-  const navigateToEdit = (transaction) => {
+  const navigateToEdit = ({ navigation }) => {
     navigation.navigate("TransactionDetails", { transaction });
   };
 
   return (
     <View style={styles.container}>
-      
+
       <Text style={styles.subHeader}>Transactions for {selectedMonth}</Text>
 
       {/* Month Selector */}
@@ -52,7 +52,7 @@ const TransactionList = () => {
             </Text>
             <TouchableOpacity
               style={styles.editButton}
-              onPress={() => navigateToEdit(transaction)}
+              onPress={() => navigation.navigate("TransactionDetails")}
             >
               <Text style={styles.editButtonText}>Edit</Text>
             </TouchableOpacity>
