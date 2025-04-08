@@ -59,7 +59,9 @@ const MainTabs = () => {
 
 const TransactionStackScreen = () => {
     return (
-        <TransactionStack.Navigator screenOptions={{ headerShown: false }}>
+        <TransactionStack.Navigator screenOptions={{
+            headerShown: false
+        }}>
             <TransactionStack.Screen
                 name="TransactionList"
                 component={TransactionList}

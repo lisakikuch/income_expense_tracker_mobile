@@ -64,6 +64,9 @@ exports.getTransactions = async (req, res) => {
 exports.updateTransaction = async (req, res) => {
     try {
         const { id } = req.params;
+        
+        console.log("PUT /transactions/:id hit with data:", req.body);
+
         const updateTransaction = await Transaction.findByIdAndUpdate(
             id,
             req.body,

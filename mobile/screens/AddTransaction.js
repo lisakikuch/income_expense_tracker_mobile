@@ -38,6 +38,7 @@ const AddTransaction = () => {
   // Display activity indicator while loading
   const [isLoading, setIsLoading] = useState(false);
 
+  // For dropdown menu items
   const TRANSACTIONTYPES = ["Expense", "Income"];
   const formattedTransactionTypes = TRANSACTIONTYPES.map((item) => ({
     label: item,
@@ -104,8 +105,8 @@ const AddTransaction = () => {
           userID: userId,
           type: "Expense",
           amount: parseFloat(transactionAmount),
-          category: "Housing",
-          date: new Date("2025-04-07").toISOString(),
+          category: "Dinning Out",
+          date: new Date("2025-03-10").toISOString(),
           note: transactionNote
         },
         {

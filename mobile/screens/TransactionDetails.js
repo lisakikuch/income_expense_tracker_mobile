@@ -1,64 +1,164 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { useAuth } from "../contexts/AuthContext";
+import { API_URL } from '@env';
 
-const TransactionDetails = ({ route }) => {
-  // Safely access the transaction data
-  const transaction = route.params?.transaction || {
-    date: "N/A",
-    category: "N/A",
-    description: "N/A",
-    amount: "N/A",
+import axios from "axios";
+
+const TransactionDetails = ({ route, navigation }) => {
+
+  const { transaction } = route.params;
+  console.log("Transaction Details - Route Params: ", transaction);
+
+  const [transactionDate, setTransactionDate] = useState(new Date(transaction.date));
+  const [transactionType, setTransactionType] = useState(transaction.type);
+  const [transactionCategory, setTransactionCategory] = useState(transaction.category);
+  const [transactionAmount, setTransactionAmount] = useState(String(transaction.amount.toFixed(2))
+  );
+  const [transactionNote, setTransactionNote] = useState(transaction.note || "");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Logged in user info + token
+  const { user, token } = useAuth();
+  console.log("User: ", user);
+  console.log("Token: ", token);
+
+  // Extract the transaction ID from the user object
+  const transactionId = transaction?._id;
+
+  const handleUpdate = async () => {
+    console.log("Updating Transaction...");
+
+    try {
+      setIsLoading(true);
+
+      console.log(`${API_URL}/transactions/${transactionId}`);
+      // Need to update body after fixing the dropdown and calendar
+      const res = await axios.put(
+        `${API_URL}/transactions/${transactionId}`,
+        {
+          type: "Expense",
+          amount: parseFloat(transactionAmount),
+          category: "Housing",
+          date: transactionDate.toISOString(),
+          note: transactionNote
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      if (res.status === 200) {
+        route.params?.onUpdate?.(res.data);
+        Alert.alert("Success", "Transaction updated successfully!");
+        navigation.goBack();
+      }
+
+    } catch (err) {
+      console.error("Error while updating transaction: ", err);
+      Alert.alert("Updating transaction failed", "Unexpected error occurred");
+
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const [description, setDescription] = useState(transaction.description);
-  const [amount, setAmount] = useState(transaction.amount);
+  const handleDelete = async () => {
+    console.log("Deleting Transaction...");
 
-  const handleUpdate = () => {
-    alert(`Updated transaction: ${description} - ${amount}`);
-  };
+    try {
+      setIsLoading(true);
 
-  const handleDelete = () => {
-    alert("Transaction deleted!");
+      console.log(`${API_URL}/transactions/${transactionId}`);
+      // Need to update body after fixing the dropdown and calendar
+      const res = await axios.delete(
+        `${API_URL}/transactions/${transactionId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      if (res.status === 200) {
+        route.params?.onUpdate?.({ deletedId: transactionId });
+        Alert.alert("Success", "Transaction deleted successfully!");
+        navigation.goBack();
+      }
+
+    } catch (err) {
+      console.error("Error while deleting transaction: ", err);
+      Alert.alert("Deleting transaction failed", "Unexpected error occurred");
+
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Transaction Details</Text>
       <View style={styles.card}>
-        <Text style={styles.title}>Transaction Details</Text>
 
         <View style={styles.row}>
           <Text style={styles.label}>Date</Text>
-          <Text>{transaction.date}</Text>
+          <TextInput
+            style={styles.input}
+            value={new Date(transactionDate).toLocaleDateString()}
+            editable={false}
+          />
+        </View>
+
+        <View style={styles.row}>
+          <Text style={styles.label}>Type</Text>
+          <Text>{transactionType}</Text>
         </View>
 
         <View style={styles.row}>
           <Text style={styles.label}>Category</Text>
-          <Text>{transaction.category}</Text>
-        </View>
-
-        <View style={styles.row}>
-          <Text style={styles.label}>Description</Text>
-          <TextInput
-            style={styles.input}
-            value={description}
-            onChangeText={setDescription}
-          />
+          <Text>{transactionCategory}</Text>
         </View>
 
         <View style={styles.row}>
           <Text style={styles.label}>Amount</Text>
           <TextInput
             style={styles.input}
-            value={amount}
-            onChangeText={setAmount}
+            value={transactionAmount}
+            onChangeText={setTransactionAmount}
           />
         </View>
 
-        <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
+        <View style={styles.row}>
+          <Text style={styles.label}>Note</Text>
+          <TextInput
+            style={styles.input}
+            value={transactionNote}
+            onChangeText={setTransactionNote}
+          />
+        </View>
+
+        <TouchableOpacity
+          style={styles.updateButton}
+          onPress={handleUpdate}>
           <Text style={styles.buttonText}>Update</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => Alert.alert(
+            "Delete Transaction",
+            "Are you sure you want to delete this transaction?",
+            [
+              {
+                text: "Cancel",
+                style: "cancel",
+              },
+              {
+                text: "Delete",
+                onPress: () => handleDelete(),
+                style: "destructive",
+              },
+            ]
+          )}
+        >
           <Text style={styles.buttonText}>Delete</Text>
         </TouchableOpacity>
       </View>

@@ -1,31 +1,72 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, FlatList } from "react-native";
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useCallback } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, FlatList, ActivityIndicator } from "react-native";
+import { useAuth } from "../contexts/AuthContext";
+import { API_URL } from '@env';
+
+import axios from "axios";
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
 
-const transactions = [
-  { date: "09/21/2025", category: "Transportation", description: "TTC Monthly Pass", amount: "$128.15" },
-  { date: "09/20/2025", category: "Eating Out", description: "Dinner", amount: "$5.25" },
-  { date: "09/19/2025", category: "Grocery", description: "Groceries", amount: "$15.99" },
-  { date: "09/18/2025", category: "Entertainment & Leisure", description: "Trip to Mexico", amount: "$3,000" },
-  { date: "09/17/2025", category: "Medical", description: "Doctor’s consultant fee", amount: "$120.49" },
-  { date: "09/17/2023", category: "Eating Out", description: "Lunch", amount: "$50.00" },
-  { date: "09/17/2025", category: "Grocery", description: "Snacks", amount: "$30.00" },
-];
+const TransactionList = ({ navigation }) => {
 
-const months = [
-  "January 2025", "February 2025", "March 2025", "April 2025", "May 2025", "June 2025",
-  "July 2025", "August 2025", "September 2025", "October 2025", "November 2025", "December 2025"
-];
+  // Save fetched transaction data
+  const [transactions, setTransactions] = useState([]);
 
-const TransactionList = () => {
-  const navigation = useNavigation();
+  // Switch between Expense/Income
+  const [transactionType, setTransactionType] = useState("Expense");
+
+  // Set a month (e.g. 2025-3)
+  const [transactionMonth, setTransactionMonth] = useState("2025-3");
+
+  // Logged in user's info + jwt
+  const { user, token } = useAuth();
+  console.log("User: ", user);
+  console.log("Token: ", token);
+
+  // Extract the user ID from the user object above
+  const userId = user?._id;
+
+  // Display activity indicator while loading
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Month Picker
+  const months = [
+    "January 2025", "February 2025", "March 2025", "April 2025", "May 2025", "June 2025",
+    "July 2025", "August 2025", "September 2025", "October 2025", "November 2025", "December 2025"
+  ];
   const [selectedMonth, setSelectedMonth] = useState("September 2025");
   const [modalVisible, setModalVisible] = useState(false);
 
-  const navigateToEdit = ({ navigation }) => {
-    navigation.navigate("TransactionDetails", { transaction });
-  };
+  useFocusEffect(
+    useCallback(() => {
+      const fetchTransactionData = async () => {
+        try {
+
+          setIsLoading(true);
+
+          // Send a GET request to get transaction data associated with the user by type + month
+          const res = await axios.get(
+            `${API_URL}/transactions?type=${transactionType}&month=${transactionMonth}&userID=${userId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+
+          // Save the fetched transaction data
+          setTransactions(res.data);
+          console.log(res.data);
+
+        } catch (err) {
+          console.error("Error while fetching transaction data: ", err);
+
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      if (userId && token) {
+        fetchTransactionData();
+      }
+    }, [transactionType, transactionMonth, userId, token])
+  );
+
 
   return (
     <View style={styles.container}>
@@ -40,25 +81,6 @@ const TransactionList = () => {
         <Ionicons name="calendar-outline" size={24} color="black" />
         <Text style={styles.monthText}>{selectedMonth}</Text>
       </TouchableOpacity>
-
-      <ScrollView style={styles.transactionList}>
-        {transactions.map((transaction, index) => (
-          <View key={index} style={styles.transactionCard}>
-            <Text style={styles.transactionDate}>
-              {transaction.date} - {transaction.category}
-            </Text>
-            <Text style={styles.transactionDetails}>
-              {transaction.description} - {transaction.amount}
-            </Text>
-            <TouchableOpacity
-              style={styles.editButton}
-              onPress={() => navigation.navigate("TransactionDetails")}
-            >
-              <Text style={styles.editButtonText}>Edit</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
-      </ScrollView>
 
       {/* Month Selector Modal */}
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
@@ -89,6 +111,48 @@ const TransactionList = () => {
           </View>
         </View>
       </Modal>
+
+      {isLoading ? (
+        <ActivityIndicator />
+      ) : transactions.length === 0 ? (
+        <Text>No Transaction Data to Show</Text>
+      ) : (
+        <FlatList
+          style={styles.transactionList}
+          data={transactions}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
+            <View style={styles.transactionCard}>
+              <Text style={styles.transactionDate}>{new Date(item.date).toLocaleDateString()}</Text>
+              <Text>{item.category}</Text>
+              {item.note ? (
+                <Text>{item.note}</Text>
+              ) : null}
+              <Text>${item.amount.toFixed(2)}</Text>
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => {
+                  navigation.navigate("TransactionDetails", {
+                    transaction: item,
+                    onUpdate: (payload) => {
+                      if (payload.deletedId) {
+                        setTransactions(prev => prev.filter(txn => txn._id !== payload.deletedId));
+                      } else {
+                        setTransactions(prev =>
+                          prev.map(txn => txn._id === payload._id ? payload : txn)
+                        );
+                      }
+                    }
+                  });
+                }}
+              >
+                <Text style={styles.editButtonText}>Edit</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+      )}
+
     </View>
   );
 };
