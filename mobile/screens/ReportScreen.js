@@ -21,7 +21,7 @@ const ReportScreen = () => {
   const [transactionMonth, setTransactionMonth] = useState("2025-3");
 
   // User friendly format shown in the UI (e.g., "September 2025")
-  const [selectedMonth, setSelectedMonth] = useState("September 2025");
+  const [selectedMonth, setSelectedMonth] = useState("March 2025");
 
   // Modal visibility for month selection
   const [modalVisible, setModalVisible] = useState(false);

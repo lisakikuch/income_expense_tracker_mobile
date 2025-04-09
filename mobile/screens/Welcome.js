@@ -7,7 +7,6 @@ import { Ionicons } from '@expo/vector-icons';
 const Welcome = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
-      Logo
       <Ionicons name="stats-chart-outline" size={100} color="#fff" style={styles.logo} />
 
       {/* Title and Subtitle */}
@@ -64,11 +63,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     borderRadius: 8,
     marginBottom: 10,
+    width: "100%"
   },
   loginButtonText: {
     color: '#6E72F1',
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: "center"
   },
   signupButton: {
     borderColor: '#fff',
@@ -76,11 +77,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 8,
+    width: "100%"
   },
   signupButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: "center"
   },
 });
 

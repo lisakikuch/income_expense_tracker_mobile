@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, FlatList, ActivityIndicator } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 import { API_URL } from '@env';
@@ -43,8 +43,13 @@ const TransactionList = ({ navigation }) => {
     "November 2025",
     "December 2025",
   ];
-  const [selectedMonth, setSelectedMonth] = useState("September 2025");
+  const [selectedMonth, setSelectedMonth] = useState("March 2025");
   const [modalVisible, setModalVisible] = useState(false);
+
+    useEffect(() => {
+      const index = months.indexOf(selectedMonth) + 1; // Convert month name to index
+      setTransactionMonth(`2025-${index}`); // Set format like "2025-3"
+    }, [selectedMonth]);
 
   useFocusEffect(
     useCallback(() => {
@@ -75,7 +80,6 @@ const TransactionList = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.subHeader}>Transactions for {selectedMonth}</Text>
 
       {/* Month Selector */}
       <TouchableOpacity
@@ -116,6 +120,8 @@ const TransactionList = ({ navigation }) => {
         </View>
       </Modal>
 
+      <Text style={styles.subHeader}>{transactionType}</Text>
+
       {isLoading ? (
         <ActivityIndicator />
       ) : transactions.length === 0 ? (
@@ -127,12 +133,15 @@ const TransactionList = ({ navigation }) => {
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <View style={styles.transactionCard}>
+              <View style={styles.transactionRow}>
+                <View>
               <Text style={styles.transactionDate}>
                 {new Date(item.date).toLocaleDateString()}
               </Text>
               <Text>{item.category}</Text>
               {item.note ? <Text>{item.note}</Text> : null}
               <Text>${item.amount.toFixed(2)}</Text>
+              </View>
               <TouchableOpacity
                 style={styles.editButton}
                 onPress={() => {
@@ -156,10 +165,46 @@ const TransactionList = ({ navigation }) => {
               >
                 <Text style={styles.editButtonText}>Edit</Text>
               </TouchableOpacity>
+              </View>
             </View>
           )}
         />
-      )}
+      )
+      }
+      <View style={styles.toggleContainer}>
+        <TouchableOpacity
+          style={[
+            styles.toggleButton,
+            transactionType === "Expense" && styles.activeButton,
+          ]}
+          onPress={() => setTransactionType("Expense")}
+        >
+          <Text
+            style={[
+              styles.toggleText,
+              transactionType === "Expense" && styles.activeText,
+            ]}
+          >
+            Expense
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.toggleButton,
+            transactionType === "Income" && styles.activeButton,
+          ]}
+          onPress={() => setTransactionType("Income")}
+        >
+          <Text
+            style={[
+              styles.toggleText,
+              transactionType === "Income" && styles.activeText,
+            ]}
+          >
+            Income
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -263,6 +308,32 @@ const styles = StyleSheet.create({
     color: "red",
     fontWeight: "bold",
   },
+  toggleContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+
+  },
+  toggleButton: {
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: "#4A90E2",
+    marginHorizontal: 5,
+  },
+  activeButton: {
+    backgroundColor: "#6a5acd",
+  },
+  toggleText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  activeText: {
+    color: "#fff",
+  },
+  transactionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },  
 });
 
 export default TransactionList;

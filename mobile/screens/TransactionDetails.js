@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 import { API_URL } from '@env';
 
 import axios from "axios";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Dropdown } from 'react-native-element-dropdown';
 
 const TransactionDetails = ({ route, navigation }) => {
 
@@ -16,6 +18,7 @@ const TransactionDetails = ({ route, navigation }) => {
   const [transactionAmount, setTransactionAmount] = useState(String(transaction.amount.toFixed(2))
   );
   const [transactionNote, setTransactionNote] = useState(transaction.note || "");
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   // Logged in user info + token
@@ -26,20 +29,74 @@ const TransactionDetails = ({ route, navigation }) => {
   // Extract the transaction ID from the user object
   const transactionId = transaction?._id;
 
+  // For dropdown menu items
+  const TRANSACTIONTYPES = ["Expense", "Income"];
+  const formattedTransactionTypes = TRANSACTIONTYPES.map((item) => ({
+    label: item,
+    value: item
+  }));
+
+  const INCOMECATEGORIES = [
+    "Salary",
+    "Bonus",
+    "Freelance",
+    "Investment Returns",
+    "Rental Income",
+    "Business Income",
+    "Gift",
+    "Refunds/Reimbursements",
+    "Other Income"];
+  const formattedIncomeCategories = INCOMECATEGORIES.map((item) => ({
+    label: item,
+    value: item
+  }));
+
+  const EXPENSECATEGORIES = [
+    "Housing",
+    "Utilities",
+    "Groceries",
+    "Dining Out",
+    "Transportation",
+    "Entertainment",
+    "Healthcare",
+    "Education",
+    "Personal Care",
+    "Shopping", "Travel",
+    "Debt Payments",
+    "Savings & Investments",
+    "Donations",
+    "Other Expenses"
+  ];
+  const formattedExpenseCategories = EXPENSECATEGORIES.map((item) => ({
+    label: item,
+    value: item
+  }));
+
   const handleUpdate = async () => {
+
     console.log("Updating Transaction...");
+
+    // Input validation
+    if (!transactionType || !transactionAmount || !transactionCategory || !transactionDate) {
+      Alert.alert("Validation Error", "Please fill out all required fields.");
+      return;
+    }
+
+    if (isNaN(transactionAmount) || Number(transactionAmount) <= 0) {
+      Alert.alert("Validation Error", "Please enter a valid amount greater than 0.");
+      return;
+    }
 
     try {
       setIsLoading(true);
 
       console.log(`${API_URL}/transactions/${transactionId}`);
-      // Need to update body after fixing the dropdown and calendar
       const res = await axios.put(
         `${API_URL}/transactions/${transactionId}`,
         {
-          type: "Expense",
+          type: transactionType,
           amount: parseFloat(transactionAmount),
-          category: "Housing",
+          category: transactionCategory,
           date: transactionDate.toISOString(),
           note: transactionNote
         },
@@ -70,7 +127,6 @@ const TransactionDetails = ({ route, navigation }) => {
       setIsLoading(true);
 
       console.log(`${API_URL}/transactions/${transactionId}`);
-      // Need to update body after fixing the dropdown and calendar
       const res = await axios.delete(
         `${API_URL}/transactions/${transactionId}`,
         {
@@ -98,35 +154,65 @@ const TransactionDetails = ({ route, navigation }) => {
       <Text style={styles.title}>Transaction Details</Text>
       <View style={styles.card}>
 
-        <View style={styles.row}>
+        <View>
           <Text style={styles.label}>Date</Text>
-          <TextInput
+          <TouchableOpacity
             style={styles.input}
-            value={new Date(transactionDate).toLocaleDateString()}
-            editable={false}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text>{transactionDate.toLocaleDateString()}</Text>
+          </TouchableOpacity>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={transactionDate}
+              mode="date"
+              display={Platform.OS === "ios" ? "default" : "default"}
+              onChange={(event, selectedDate) => {
+                setShowDatePicker(false);
+                if (selectedDate) setTransactionDate(selectedDate);
+              }}
+            />
+          )}
+        </View>
+
+        <View>
+          <Text style={styles.label}>Type</Text>
+          <Dropdown
+            style={styles.input}
+            data={formattedTransactionTypes}
+            labelField="label"
+            valueField="value"
+            value={transactionType}
+            onChange={(item) => {
+              setTransactionType(item.value);
+              setTransactionCategory(null);
+            }}
+            placeholder="Select Type"
           />
         </View>
 
-        <View style={styles.row}>
-          <Text style={styles.label}>Type</Text>
-          <Text>{transactionType}</Text>
-        </View>
+        <Text style={styles.label}>Category</Text>
+        <Dropdown
+          style={styles.input}
+          data={transactionType === "Income" ? formattedIncomeCategories : formattedExpenseCategories}
+          labelField="label"
+          valueField="value"
+          value={transactionCategory}
+          onChange={(item) => setTransactionCategory(item.value)}
+        />
 
-        <View style={styles.row}>
-          <Text style={styles.label}>Category</Text>
-          <Text>{transactionCategory}</Text>
-        </View>
-
-        <View style={styles.row}>
+        <View>
           <Text style={styles.label}>Amount</Text>
           <TextInput
             style={styles.input}
             value={transactionAmount}
             onChangeText={setTransactionAmount}
+            keyboardType="decimal-pad"
           />
         </View>
 
-        <View style={styles.row}>
+        <View>
           <Text style={styles.label}>Note</Text>
           <TextInput
             style={styles.input}

@@ -14,8 +14,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { API_URL } from '@env';
 
 import axios from "axios";
-// import DateTimePicker from '@react-native-community/datetimepicker';
-// import { Dropdown } from 'react-native-element-dropdown';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Dropdown } from 'react-native-element-dropdown';
 
 const AddTransaction = () => {
 
@@ -85,28 +85,27 @@ const AddTransaction = () => {
     console.log("Submitting form...");
 
     // Input validation
-    // if (!transactionType || !transactionAmount || !transactionCategory || !transactionDate) {
-    //   Alert.alert("Validation Error", "Please fill out all required fields.");
-    //   return;
-    // }
+    if (!transactionType || !transactionAmount || !transactionCategory || !transactionDate) {
+      Alert.alert("Validation Error", "Please fill out all required fields.");
+      return;
+    }
 
-    // if (isNaN(transactionAmount) || Number(transactionAmount) <= 0) {
-    //   Alert.alert("Validation Error", "Please enter a valid amount greater than 0.");
-    //   return;
-    // }
+    if (isNaN(transactionAmount) || Number(transactionAmount) <= 0) {
+      Alert.alert("Validation Error", "Please enter a valid amount greater than 0.");
+      return;
+    }
 
     try {
       setIsLoading(true);
 
-      // Need to update body after fixing the dropdown and calendar
       const res = await axios.post(
         `${API_URL}/transactions/`,
         {
           userID: userId,
-          type: "Expense",
+          type: transactionType,
           amount: parseFloat(transactionAmount),
-          category: "Dinning Out",
-          date: new Date("2025-03-10").toISOString(),
+          category: transactionCategory,
+          date: new Date(transactionDate).toISOString(),
           note: transactionNote
         },
         {
@@ -139,44 +138,8 @@ const AddTransaction = () => {
       <View style={styles.card}>
         <Text style={styles.subHeader}>Transaction Details</Text>
 
-        <Text style={styles.label}>Type</Text>
-        {/* <TextInput style={styles.input} value="Income" editable={false} /> */}
-        {/* <Dropdown
-          data={formattedTransactionTypes}
-          labelField="label"
-          valueField="value"
-          value={transactionType}
-          onChange={(item) => {
-            setTransactionType(item.value);
-            setTransactionCategory(null);
-          }}
-          placeholder="Select Type"
-        /> */}
-
-        <Text style={styles.label}>Amount</Text>
-        <TextInput
-          style={styles.input}
-          keyboardType="decimal-pad"
-          value={transactionAmount}
-          onChangeText={setTransactionAmount}
-          placeholder="Enter Amount"
-        />
-
-        <Text style={styles.label}>Category</Text>
-        {/* <TextInput style={styles.input} value="Food" editable={false} /> */}
-        {/* <Dropdown
-          data={transactionType === "Income" ? formattedIncomeCategories : formattedExpenseCategories}
-          labelField="label"
-          valueField="value"
-          value={transactionCategory}
-          onChange={(item) => setTransactionCategory(item.value)}
-          placeholder="Select Category"
-          disabled={!transactionType}
-        /> */}
-
         <Text style={styles.label}>Date</Text>
-        {/* <TextInput style={styles.input} value="12/08/2023" editable={false} /> */}
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={styles.input}
           onPress={() => setShowDatePicker(true)}
         >
@@ -186,13 +149,47 @@ const AddTransaction = () => {
           <DateTimePicker
             value={transactionDate}
             mode="date"
-            display={Platform.OS === "ios" ? "spinner" : "default"}
+            display={Platform.OS === "ios" ? "default" : "calendar"}
             onChange={(event, selectedDate) => {
               setShowDatePicker(false);
               if (selectedDate) setTransactionDate(selectedDate);
             }}
           />
-        )} */}
+        )}
+
+        <Text style={styles.label}>Type</Text>
+        <Dropdown
+          style={styles.input}
+          data={formattedTransactionTypes}
+          labelField="label"
+          valueField="value"
+          value={transactionType}
+          onChange={(item) => {
+            setTransactionType(item.value);
+            setTransactionCategory(null);
+          }}
+          placeholder="Select Type"
+        />
+        <Text style={styles.label}>Category</Text>
+        <Dropdown
+          style={styles.input}
+          data={transactionType === "Income" ? formattedIncomeCategories : formattedExpenseCategories}
+          labelField="label"
+          valueField="value"
+          value={transactionCategory}
+          onChange={(item) => setTransactionCategory(item.value)}
+          placeholder="Select Category"
+          disabled={!transactionType}
+        />
+        
+        <Text style={styles.label}>Amount</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="decimal-pad"
+          value={transactionAmount}
+          onChangeText={setTransactionAmount}
+          placeholder="Enter Amount"
+        />
 
         <Text style={styles.label}>Note (Optional)</Text>
         <TextInput
@@ -263,6 +260,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
+
 });
 
 export default AddTransaction;
