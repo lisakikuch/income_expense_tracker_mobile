@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-// import CheckBox from '@react-native-community/checkbox';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { API_URL } from '@env';
@@ -11,10 +10,9 @@ const SignUp = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [acceptedTerms, setAcceptedTerms] = useState(false); 
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const handleSignUp = async () => {
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(email)) {
@@ -46,17 +44,17 @@ const SignUp = ({ navigation }) => {
 
       if (res.status === 201) {
         Alert.alert("Success", "Account created successfully!");
-        navigation.navigate('Login');
+        navigation.navigate("Login");
       }
-
     } catch (err) {
       console.error("Sign Up Error: ", err.response?.data || err.message);
-      Alert.alert("Sign Up Failed", err.response?.data?.message || "Something went wrong");
-
+      Alert.alert(
+        "Sign Up Failed",
+        err.response?.data?.message || "Something went wrong"
+      );
     } finally {
       setIsLoading(false);
     }
-
   };
 
   const CustomCheckbox = ({ value, onValueChange }) => {
@@ -67,8 +65,8 @@ const SignUp = ({ navigation }) => {
           width: 24,
           height: 24,
           borderWidth: 2,
-          borderColor: '#6a5acd',
-          backgroundColor: value ? '#6a5acd' : 'white',
+          borderColor: "#6E72F1",
+          backgroundColor: value ? "#6E72F1" : "white",
           marginRight: 8,
         }}
       />
@@ -115,40 +113,28 @@ const SignUp = ({ navigation }) => {
         />
       </View>
 
-      {/* Fixed Checkbox */}
-      {/* <View style={styles.checkboxContainer}>
-        <CheckBox
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <CustomCheckbox
           value={acceptedTerms}
           onValueChange={setAcceptedTerms}
-          tintColors={{ true: "#6a5acd", false: "gray" }}
         />
-        <Text style={styles.checkboxLabel}>
-          I agree with Terms & Conditions
-        </Text>
-      </View> */}
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <CustomCheckbox value={acceptedTerms} onValueChange={setAcceptedTerms} />
         <Text>I agree with</Text>
         <TouchableOpacity>
           <Text> Terms & Conditions</Text>
         </TouchableOpacity>
       </View>
 
-      {isLoading ? (<ActivityIndicator />) :
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleSignUp}
-        >
+      {isLoading ? (
+        <ActivityIndicator />
+      ) : (
+        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
-      }
+      )}
 
       <Text style={styles.footerText}>
         Already registered?{" "}
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Login")}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
           <Text style={styles.linkText}>Log In</Text>
         </TouchableOpacity>
       </Text>
@@ -159,26 +145,26 @@ const SignUp = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    justifyContent: "center",
     padding: 20,
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F0F0F0',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F0F0F0",
     borderRadius: 8,
     padding: 12,
     marginBottom: 15,
@@ -188,33 +174,33 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
   },
   checkboxLabel: {
     marginLeft: 8,
   },
   button: {
-    backgroundColor: '#4A90E2',
+    backgroundColor: "#6E72F1",
     padding: 15,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   footerText: {
     marginTop: 15,
-    textAlign: 'center',
-    color: '#666',
+    textAlign: "center",
+    color: "#666",
   },
   linkText: {
-    color: '#4A90E2',
-    fontWeight: 'bold',
+    color: "#6E72F1",
+    fontWeight: "bold",
   },
 });
 

@@ -7,8 +7,8 @@ import { Ionicons } from '@expo/vector-icons';
 const Welcome = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
-      {/* Logo */}
-      <Ionicons name="star-outline" size={100} color="#fff" style={styles.logo} />
+      Logo
+      <Ionicons name="stats-chart-outline" size={100} color="#fff" style={styles.logo} />
 
       {/* Title and Subtitle */}
       <Text style={styles.title}>Finance Tracker</Text>
@@ -36,7 +36,7 @@ const Welcome = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#4A90E2',
+    backgroundColor: '#6E72F1',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   loginButtonText: {
-    color: '#4A90E2',
+    color: '#6E72F1',
     fontSize: 18,
     fontWeight: 'bold',
   },

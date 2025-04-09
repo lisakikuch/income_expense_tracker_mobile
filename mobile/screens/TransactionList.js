@@ -8,7 +8,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
 
 const TransactionList = ({ navigation }) => {
-
   // Save fetched transaction data
   const [transactions, setTransactions] = useState([]);
 
@@ -31,8 +30,18 @@ const TransactionList = ({ navigation }) => {
 
   // Month Picker
   const months = [
-    "January 2025", "February 2025", "March 2025", "April 2025", "May 2025", "June 2025",
-    "July 2025", "August 2025", "September 2025", "October 2025", "November 2025", "December 2025"
+    "January 2025",
+    "February 2025",
+    "March 2025",
+    "April 2025",
+    "May 2025",
+    "June 2025",
+    "July 2025",
+    "August 2025",
+    "September 2025",
+    "October 2025",
+    "November 2025",
+    "December 2025",
   ];
   const [selectedMonth, setSelectedMonth] = useState("September 2025");
   const [modalVisible, setModalVisible] = useState(false);
@@ -41,7 +50,6 @@ const TransactionList = ({ navigation }) => {
     useCallback(() => {
       const fetchTransactionData = async () => {
         try {
-
           setIsLoading(true);
 
           // Send a GET request to get transaction data associated with the user by type + month
@@ -53,10 +61,8 @@ const TransactionList = ({ navigation }) => {
           // Save the fetched transaction data
           setTransactions(res.data);
           console.log(res.data);
-
         } catch (err) {
           console.error("Error while fetching transaction data: ", err);
-
         } finally {
           setIsLoading(false);
         }
@@ -67,10 +73,8 @@ const TransactionList = ({ navigation }) => {
     }, [transactionType, transactionMonth, userId, token])
   );
 
-
   return (
     <View style={styles.container}>
-
       <Text style={styles.subHeader}>Transactions for {selectedMonth}</Text>
 
       {/* Month Selector */}
@@ -123,11 +127,11 @@ const TransactionList = ({ navigation }) => {
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <View style={styles.transactionCard}>
-              <Text style={styles.transactionDate}>{new Date(item.date).toLocaleDateString()}</Text>
+              <Text style={styles.transactionDate}>
+                {new Date(item.date).toLocaleDateString()}
+              </Text>
               <Text>{item.category}</Text>
-              {item.note ? (
-                <Text>{item.note}</Text>
-              ) : null}
+              {item.note ? <Text>{item.note}</Text> : null}
               <Text>${item.amount.toFixed(2)}</Text>
               <TouchableOpacity
                 style={styles.editButton}
@@ -136,13 +140,17 @@ const TransactionList = ({ navigation }) => {
                     transaction: item,
                     onUpdate: (payload) => {
                       if (payload.deletedId) {
-                        setTransactions(prev => prev.filter(txn => txn._id !== payload.deletedId));
+                        setTransactions((prev) =>
+                          prev.filter((txn) => txn._id !== payload.deletedId)
+                        );
                       } else {
-                        setTransactions(prev =>
-                          prev.map(txn => txn._id === payload._id ? payload : txn)
+                        setTransactions((prev) =>
+                          prev.map((txn) =>
+                            txn._id === payload._id ? payload : txn
+                          )
                         );
                       }
-                    }
+                    },
                   });
                 }}
               >
@@ -152,7 +160,6 @@ const TransactionList = ({ navigation }) => {
           )}
         />
       )}
-
     </View>
   );
 };

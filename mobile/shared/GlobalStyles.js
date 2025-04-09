@@ -25,6 +25,7 @@ const globalStyles = StyleSheet.create({
   headerRightText: {
     color: '#007AFF',
     fontSize: 16,
+    
   },
   headerContainer: {
     backgroundColor: '#fff',

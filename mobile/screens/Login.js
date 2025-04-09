@@ -57,8 +57,8 @@ const Login = ({ navigation }) => {
       )}
 
       <Text style={styles.footerText}>
-        Don't have an account yet?{' '}
-        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+        Don't have an account yet?{" "}
+        <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
           <Text style={styles.linkText}>Sign Up</Text>
         </TouchableOpacity>
       </Text>
@@ -69,26 +69,26 @@ const Login = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    justifyContent: "center",
     padding: 20,
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: "#666",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F0F0F0',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F0F0F0",
     borderRadius: 8,
     padding: 12,
     marginBottom: 15,
@@ -98,25 +98,25 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   button: {
-    backgroundColor: '#4A90E2',
+    backgroundColor: "#6E72F1",
     padding: 15,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 20,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   footerText: {
     marginTop: 15,
-    textAlign: 'center',
-    color: '#666',
+    textAlign: "center",
+    color: "#666",
   },
   linkText: {
-    color: '#4A90E2',
-    fontWeight: 'bold',
+    color: "#6E72F1",
+    fontWeight: "bold",
   },
 });
 
