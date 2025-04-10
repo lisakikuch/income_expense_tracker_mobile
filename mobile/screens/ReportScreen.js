@@ -1,139 +1,197 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, } from "react-native";
 import { PieChart } from "react-native-chart-kit";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
-import { API_URL } from '@env';
+import { API_URL } from "@env";
+
+// Array list for month and year selection
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+const YEARS = [2023, 2024, 2025, 2026, 2027]; // Expandable
 
 const ReportScreen = () => {
-  // Get the logged in user object and token from AuthContext.js
+
+  // Authentication context
   const { user, token } = useAuth();
   const userId = user?._id;
 
-  // Store all transactions returned from the backend API
-  const [transactions, setTransactions] = useState([]);
+  // State for selected month/year as Date
+  const [selectedMonthDate, setSelectedMonthDate] = useState(new Date());
 
-  // Used to filter the type of transaction (Expense or Income)
+  // Backend format "YYYY-MM" (e.g., "2025-4")
+  const [transactionMonth, setTransactionMonth] = useState("");
+
+  // Toggle between "Expense" and "Income"
   const [transactionType, setTransactionType] = useState("Expense");
 
-  // Backend friendly format (e.g., "2025-3") used in the API query
-  const [transactionMonth, setTransactionMonth] = useState("2025-3");
+  // State for fetched transactions
+  const [transactions, setTransactions] = useState([]);
 
-  // User friendly format shown in the UI (e.g., "September 2025")
-  const [selectedMonth, setSelectedMonth] = useState("March 2025");
-
-  // Modal visibility for month selection
-  const [modalVisible, setModalVisible] = useState(false);
-
-  // Pie chart data formatted from grouped transaction data
+  // Processed data for pie chart
   const [pieData, setPieData] = useState([]);
 
-  // Sum of all transaction amounts (per filter)
+  // Total amount for the selected month/type
   const [totalAmount, setTotalAmount] = useState(0);
 
-  // List of selectable months (static)
-  const months = [
-    "January 2025",
-    "February 2025",
-    "March 2025",
-    "April 2025",
-    "May 2025",
-    "June 2025",
-    "July 2025",
-    "August 2025",
-    "September 2025",
-    "October 2025",
-    "November 2025",
-    "December 2025",
-  ];
+  // Toggle custom dropdown
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
 
-  // Whenever the user selects a new month from the modal,
-  // convert it into a backend-compatible format and update state
+  // When user selects new month/year, update backend-friendly string
   useEffect(() => {
-    const index = months.indexOf(selectedMonth) + 1; // Convert month name to index
-    setTransactionMonth(`2025-${index}`); // Set format like "2025-3"
-  }, [selectedMonth]);
+    const year = selectedMonthDate.getFullYear();
+    const month = selectedMonthDate.getMonth() + 1;
+    setTransactionMonth(`${year}-${month}`);
+  }, [selectedMonthDate]);
 
-  // Fetch transaction data from backend when user or filter changes
+  // Fetch transactions and generate pie data
+  const fetchTransactionData = async () => {
+    try {
+      const res = await axios.get(
+        `${API_URL}/transactions?type=${transactionType}&month=${transactionMonth}&userID=${userId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const data = res.data;
+      setTransactions(data);
+
+      // Group transactions by category and calculate totals
+      const grouped = {};
+      let total = 0;
+      data.forEach((tx) => {
+        const category = tx.category;
+        grouped[category] = (grouped[category] || 0) + tx.amount;
+        total += tx.amount;
+      });
+
+      // Format for pie chart
+      const colors = ["#4A90E2", "#F28B82", "#34A853", "#FFB74D", "#A67EBF", "#FFD700"];
+      const pie = Object.keys(grouped).map((category, index) => ({
+        name: category,
+        amount: grouped[category],
+        color: colors[index % colors.length],
+        legendFontColor: "black",
+        legendFontSize: 14,
+      }));
+
+      setPieData(pie);
+      setTotalAmount(total);
+    } catch (err) {
+      console.error("Error fetching transactions:", err);
+    }
+  };
+
+  // Fetch data when filters change
   useEffect(() => {
-    const fetchTransactionData = async () => {
-      try {
-        // GET request to backend API with filters: type, month, and user ID
-        const res = await axios.get(
-          `${API_URL}/transactions?type=${transactionType}&month=${transactionMonth}&userID=${userId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        const data = res.data;
-        setTransactions(data);
-
-        // Group transactions by category and calculate total amount
-        const grouped = {};
-        let total = 0;
-
-        data.forEach((tx) => {
-          const category = tx.category;
-          if (!grouped[category]) {
-            grouped[category] = 0;
-          }
-          grouped[category] += tx.amount;
-          total += tx.amount;
-        });
-
-        // Convert grouped data into pie chart format
-        const colors = [
-          "#4A90E2",
-          "#F28B82",
-          "#34A853",
-          "#FFB74D",
-          "#A67EBF",
-          "#FFD700",
-        ];
-        const pie = Object.keys(grouped).map((category, index) => ({
-          name: category,
-          amount: grouped[category],
-          color: colors[index % colors.length],
-          legendFontColor: "black",
-          legendFontSize: 14,
-        }));
-
-        setPieData(pie);
-        setTotalAmount(total);
-      } catch (err) {
-        console.error("Error while fetching transaction data: ", err);
-      }
-    };
-
-    if (userId && token) {
+    if (userId && token && transactionMonth) {
       fetchTransactionData();
     }
   }, [transactionType, transactionMonth, userId, token]);
 
+  // Toggle month picker UI
+  const toggleMonthPicker = () => setShowMonthPicker((prev) => !prev);
+
+  // Handle month change from picker
+  const handleMonthChange = (monthIndex) => {
+    const updated = new Date(selectedMonthDate);
+    updated.setMonth(monthIndex);
+    setSelectedMonthDate(updated);
+    setShowMonthPicker(false);
+  };
+
+  // Handle year change from picker
+  const handleYearChange = (year) => {
+    const updated = new Date(selectedMonthDate);
+    updated.setFullYear(year);
+    setSelectedMonthDate(updated);
+  };
+
   return (
-    <View style={styles.container}>
-      {/* Button to trigger month selection modal */}
-      <TouchableOpacity
-        onPress={() => setModalVisible(true)}
-        style={styles.calendarButton}
-      >
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+      
+      {/* Month/Year Picker Toggle button */}
+      <TouchableOpacity onPress={toggleMonthPicker} style={styles.calendarButton}>
         <Ionicons name="calendar-outline" size={24} color="black" />
-        <Text style={styles.monthText}>{selectedMonth}</Text>
+        <Text style={styles.monthText}>
+          {MONTH_NAMES[selectedMonthDate.getMonth()]} {selectedMonthDate.getFullYear()}
+        </Text>
       </TouchableOpacity>
 
-      {/* Display total Income or Expense based on selected type */}
+      {/* Refresh Button */}
+      <TouchableOpacity onPress={fetchTransactionData} style={styles.refreshButton}>
+        <Ionicons name="refresh" size={20} color="black" />
+        <Text style={styles.refreshText}>Refresh</Text>
+      </TouchableOpacity>
+
+      {/* Custom Month/Year Dropdown Picker UI */}
+      {showMonthPicker && (
+        <View style={styles.pickerContainer}>
+          {/* Months */}
+          <View style={styles.monthGrid}>
+            {MONTH_NAMES.map((name, index) => (
+              <TouchableOpacity key={name} onPress={() => handleMonthChange(index)}>
+                <Text style={[
+                  styles.pickerItem,
+                  selectedMonthDate.getMonth() === index && styles.activeItem,
+                ]}>
+                  {name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Years */}
+          <View style={styles.yearRow}>
+            {YEARS.map((year) => (
+              <TouchableOpacity key={year} onPress={() => handleYearChange(year)}>
+                <Text style={[
+                  styles.pickerItem,
+                  selectedMonthDate.getFullYear() === year && styles.activeItem,
+                ]}>
+                  {year}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
+
+      {/* Income/Expense Toggle */}
+      <View style={styles.toggleContainer}>
+        <TouchableOpacity
+          style={[styles.toggleButton, transactionType === "Expense" && styles.activeButton]}
+          onPress={() => setTransactionType("Expense")}
+        >
+          <Text style={[
+            styles.toggleText,
+            transactionType === "Expense" && styles.activeText,
+          ]}>
+            Expense
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.toggleButton, transactionType === "Income" && styles.activeButton]}
+          onPress={() => setTransactionType("Income")}
+        >
+          <Text style={[
+            styles.toggleText,
+            transactionType === "Income" && styles.activeText,
+          ]}>
+            Income
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Summary Box */}
       <View style={styles.totalContainer}>
         <View style={styles.totalBox}>
           <Text style={styles.totalLabel}>
             {transactionType === "Expense" ? "Total Expense" : "Total Income"}
           </Text>
-          <Text
-            style={
-              transactionType === "Expense"
-                ? styles.expenseAmount
-                : styles.incomeAmount
-            }
-          >
+          <Text style={transactionType === "Expense" ? styles.expenseAmount : styles.incomeAmount}>
             {transactionType === "Expense"
               ? `- $${totalAmount.toFixed(2)}`
               : `+ $${totalAmount.toFixed(2)}`}
@@ -141,103 +199,52 @@ const ReportScreen = () => {
         </View>
       </View>
 
-      {/* Render pie chart if there is data, otherwise show fallback text */}
+      {/* Chart and Category Breakdown */}
       {pieData.length > 0 ? (
-        <View style={styles.chartContainer}>
-          <PieChart
-            data={pieData}
-            width={350}
-            height={220}
-            chartConfig={{
-              backgroundColor: "#fff",
-              backgroundGradientFrom: "#fff",
-              backgroundGradientTo: "#fff",
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            }}
-            accessor="amount"
-            backgroundColor="transparent"
-            paddingLeft="15"
-          />
-        </View>
+        <>
+          <View style={styles.chartContainer}>
+            <PieChart
+              data={pieData}
+              width={350}
+              height={220}
+              chartConfig={{
+                backgroundColor: "#fff",
+                backgroundGradientFrom: "#fff",
+                backgroundGradientTo: "#fff",
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              }}
+              accessor="amount"
+              backgroundColor="transparent"
+              paddingLeft="15"
+            />
+          </View>
+
+          {/* Category Breakdown Text */}
+          <View style={{ marginTop: 10 }}>
+            {pieData.map((item, index) => (
+              <View key={index} style={styles.breakdownRow}>
+                <View style={styles.breakdownLabel}>
+                  <View style={[styles.colorDot, { backgroundColor: item.color }]} />
+                  <Text style={styles.breakdownText}>{item.name}</Text>
+                </View>
+                <Text style={styles.breakdownText}>${item.amount.toFixed(2)}</Text>
+              </View>
+            ))}
+          </View>
+        </>
       ) : (
         <Text style={{ textAlign: "center", marginVertical: 20 }}>
           No data available for this selection.
         </Text>
       )}
-
-      {/* Toggle buttons to switch between Income and Expense */}
-      <View style={styles.toggleContainer}>
-        <TouchableOpacity
-          style={[
-            styles.toggleButton,
-            transactionType === "Expense" && styles.activeButton,
-          ]}
-          onPress={() => setTransactionType("Expense")}
-        >
-          <Text
-            style={[
-              styles.toggleText,
-              transactionType === "Expense" && styles.activeText,
-            ]}
-          >
-            Expense
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.toggleButton,
-            transactionType === "Income" && styles.activeButton,
-          ]}
-          onPress={() => setTransactionType("Income")}
-        >
-          <Text
-            style={[
-              styles.toggleText,
-              transactionType === "Income" && styles.activeText,
-            ]}
-          >
-            Income
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Modal window to pick a different month */}
-      <Modal visible={modalVisible} animationType="slide" transparent={true}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select a Month</Text>
-            <FlatList
-              data={months}
-              keyExtractor={(item) => item}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.monthOption}
-                  onPress={() => {
-                    setSelectedMonth(item);
-                    setModalVisible(false);
-                  }}
-                >
-                  <Text style={styles.monthOptionText}>{item}</Text>
-                </TouchableOpacity>
-              )}
-            />
-            <TouchableOpacity
-              onPress={() => setModalVisible(false)}
-              style={styles.cancelButton}
-            >
-              <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#F8F9FA",
     padding: 20,
   },
   calendarButton: {
@@ -249,12 +256,72 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 5,
   },
+  refreshButton: {
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  refreshText: {
+    marginLeft: 5,
+    fontSize: 14,
+  },
+  pickerContainer: {
+    marginBottom: 10,
+  },
+  monthGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+  },
+  yearRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 10,
+    flexWrap: "wrap",
+  },
+  pickerItem: {
+    padding: 8,
+    margin: 4,
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 5,
+    textAlign: "center",
+    minWidth: 80,
+  },
+  activeItem: {
+    backgroundColor: "#6a5acd",
+    color: "#fff",
+    borderColor: "#6a5acd",
+  },
+  toggleContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: 10,
+  },
+  toggleButton: {
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: "#4A90E2",
+    marginHorizontal: 5,
+  },
+  activeButton: {
+    backgroundColor: "#6a5acd",
+  },
+  toggleText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  activeText: {
+    color: "#fff",
+  },
   totalContainer: {
     marginVertical: 20,
     alignItems: "center",
   },
   totalBox: {
-    backgroundColor: "#F0F0F0",
+    backgroundColor: "#fff",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
@@ -276,62 +343,25 @@ const styles = StyleSheet.create({
   chartContainer: {
     marginBottom: 20,
   },
-  toggleContainer: {
+  breakdownRow: {
     flexDirection: "row",
-    justifyContent: "center",
-    marginVertical: 20,
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 6,
+    paddingHorizontal: 10,
   },
-  toggleButton: {
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: "#4A90E2",
-    marginHorizontal: 5,
-  },
-  activeButton: {
-    backgroundColor: "#6a5acd",
-  },
-  toggleText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  activeText: {
-    color: "#fff",
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalContent: {
-    width: 300,
-    backgroundColor: "#fff",
-    padding: 20,
-    marginHorizontal: 50,
-    borderRadius: 10,
+  breakdownLabel: {
+    flexDirection: "row",
     alignItems: "center",
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
+  colorDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 8,
   },
-  monthOption: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "gray",
-    width: "100%",
-    alignItems: "center",
-  },
-  monthOptionText: {
+  breakdownText: {
     fontSize: 16,
-  },
-  cancelButton: {
-    marginTop: 10,
-    padding: 10,
-  },
-  cancelText: {
-    fontSize: 16,
-    color: "red",
-    fontWeight: "bold",
   },
 });
 
