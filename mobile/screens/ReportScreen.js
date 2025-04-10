@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, TouchableOpacity, } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { PieChart } from "react-native-chart-kit";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
@@ -7,7 +12,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { API_URL } from "@env";
 import globalStyles from "../shared/GlobalStyles";
 
-// Arrays list for month names and year 
+// Arrays for month names and year range
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
@@ -21,17 +26,7 @@ const ReportScreen = () => {
   const [selectedMonthDate, setSelectedMonthDate] = useState(new Date());
   const [transactionMonth, setTransactionMonth] = useState("");
   const [transactionType, setTransactionType] = useState("Expense");
-
-  // Backend friendly format (e.g., "2025-3") used in the API query
-  const [transactionMonth, setTransactionMonth] = useState("2025-3");
-
-  // User friendly format shown in the UI (e.g., "September 2025")
-  const [selectedMonth, setSelectedMonth] = useState("September 2025");
-
-  // Modal visibility for month selection
-  const [modalVisible, setModalVisible] = useState(false);
-
-  // Pie chart data formatted from grouped transaction data
+  const [transactions, setTransactions] = useState([]);
   const [pieData, setPieData] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const [showMonthPicker, setShowMonthPicker] = useState(false);

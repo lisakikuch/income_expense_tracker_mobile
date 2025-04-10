@@ -1,9 +1,24 @@
-import React, { useState, useCallback } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, FlatList, ActivityIndicator } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
-import { useFocusEffect } from '@react-navigation/native';
-import { Ionicons } from "@expo/vector-icons";
+import { API_URL } from "@env";
+import globalStyles from "../shared/GlobalStyles";
+
+// Month/year picker options
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+const YEARS = [2023, 2024, 2025, 2026, 2027];
 
 const TransactionList = ({ navigation }) => {
   const { user, token } = useAuth();

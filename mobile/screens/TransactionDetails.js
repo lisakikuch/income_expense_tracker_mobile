@@ -26,6 +26,7 @@ const TransactionDetails = ({ route, navigation }) => {
 
   const { user, token } = useAuth();
   const transactionId = transaction?._id;
+
   // Handle updating the transaction
   const handleUpdate = async () => {
     try {
@@ -107,7 +108,6 @@ const TransactionDetails = ({ route, navigation }) => {
             style={globalStyles.input}
             value={transactionAmount}
             onChangeText={setTransactionAmount}
-            keyboardType="decimal-pad"
           />
         </View>
 

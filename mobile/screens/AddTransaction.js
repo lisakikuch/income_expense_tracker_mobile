@@ -6,7 +6,7 @@ import axios from "axios";
 import globalStyles from "../shared/GlobalStyles"; 
 
 const AddTransaction = () => {
-  // Logged in user info & token
+  // Logged in user info + token
   const { user, token } = useAuth();
   const userId = user?._id;
 
@@ -22,34 +22,8 @@ const AddTransaction = () => {
 
   // Placeholder dropdown values
   const TRANSACTIONTYPES = ["Expense", "Income"];
-  const INCOMECATEGORIES = [
-    "Salary",
-    "Bonus",
-    "Freelance",
-    "Investment Returns",
-    "Rental Income",
-    "Business Income",
-    "Gift",
-    "Refunds/Reimbursements",
-    "Other Income",
-  ];
-  const EXPENSECATEGORIES = [
-    "Housing",
-    "Utilities",
-    "Groceries",
-    "Dining Out",
-    "Transportation",
-    "Entertainment",
-    "Healthcare",
-    "Education",
-    "Personal Care",
-    "Shopping",
-    "Travel",
-    "Debt Payments",
-    "Savings & Investments",
-    "Donations",
-    "Other Expenses",
-  ];
+  const INCOMECATEGORIES = ["Salary", "Bonus", "Freelance", "Investment Returns", "Rental Income", "Business Income", "Gift", "Refunds/Reimbursements", "Other Income"];
+  const EXPENSECATEGORIES = ["Housing", "Utilities", "Groceries", "Dining Out", "Transportation", "Entertainment", "Healthcare", "Education", "Personal Care", "Shopping", "Travel", "Debt Payments", "Savings & Investments", "Donations", "Other Expenses"];
 
   const handleAddTransaction = async () => {
     console.log("Submitting form...");
@@ -61,14 +35,14 @@ const AddTransaction = () => {
         `${API_URL}/transactions/`,
         {
           userID: userId,
-          type: transactionType,
+          type: "Expense",
           amount: parseFloat(transactionAmount),
           category: "Dinning Out",
           date: new Date("2025-03-10").toISOString(),
-          note: transactionNote,
+          note: transactionNote
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` }
         }
       );
 
@@ -82,15 +56,10 @@ const AddTransaction = () => {
         setTransactionDate(new Date());
         setTransactionNote("");
       }
+
     } catch (err) {
-      console.error(
-        "Error while adding transaction: ",
-        err.response?.data || err.message
-      );
-      Alert.alert(
-        "Adding transaction failed",
-        err.response?.data?.message || "Something went wrong"
-      );
+      console.error("Error while adding transaction: ", err.response?.data || err.message);
+      Alert.alert("Adding transaction failed", err.response?.data?.message || "Something went wrong");
     } finally {
       setIsLoading(false);
     }
@@ -101,8 +70,8 @@ const AddTransaction = () => {
       <View style={globalStyles.card}>
         <Text style={globalStyles.subHeader}>Transaction Details</Text>
 
-        {/* Input for type */}
         <Text style={globalStyles.label}>Type</Text>
+        {/* Dropdown or input for type */}
 
         <Text style={globalStyles.label}>Amount</Text>
         <TextInput
@@ -113,11 +82,11 @@ const AddTransaction = () => {
           placeholder="Enter Amount"
         />
 
-        {/* Dropdown or input for category */}
         <Text style={globalStyles.label}>Category</Text>
+        {/* Dropdown or input for category */}
 
-        {/* Date picker input */}
         <Text style={globalStyles.label}>Date</Text>
+        {/* Date picker input here */}
 
         <Text style={globalStyles.label}>Note (Optional)</Text>
         <TextInput
@@ -141,4 +110,5 @@ const AddTransaction = () => {
     </View>
   );
 };
+
 export default AddTransaction;
