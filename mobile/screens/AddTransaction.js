@@ -1,9 +1,16 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { useAuth } from "../contexts/AuthContext";
-import { API_URL } from '@env';
+import { API_URL } from "@env";
 import axios from "axios";
-import globalStyles from "../shared/GlobalStyles"; 
+import globalStyles from "../shared/GlobalStyles";
 
 const AddTransaction = () => {
   // Logged in user info + token
@@ -22,8 +29,34 @@ const AddTransaction = () => {
 
   // Placeholder dropdown values
   const TRANSACTIONTYPES = ["Expense", "Income"];
-  const INCOMECATEGORIES = ["Salary", "Bonus", "Freelance", "Investment Returns", "Rental Income", "Business Income", "Gift", "Refunds/Reimbursements", "Other Income"];
-  const EXPENSECATEGORIES = ["Housing", "Utilities", "Groceries", "Dining Out", "Transportation", "Entertainment", "Healthcare", "Education", "Personal Care", "Shopping", "Travel", "Debt Payments", "Savings & Investments", "Donations", "Other Expenses"];
+  const INCOMECATEGORIES = [
+    "Salary",
+    "Bonus",
+    "Freelance",
+    "Investment Returns",
+    "Rental Income",
+    "Business Income",
+    "Gift",
+    "Refunds/Reimbursements",
+    "Other Income",
+  ];
+  const EXPENSECATEGORIES = [
+    "Housing",
+    "Utilities",
+    "Groceries",
+    "Dining Out",
+    "Transportation",
+    "Entertainment",
+    "Healthcare",
+    "Education",
+    "Personal Care",
+    "Shopping",
+    "Travel",
+    "Debt Payments",
+    "Savings & Investments",
+    "Donations",
+    "Other Expenses",
+  ];
 
   const handleAddTransaction = async () => {
     console.log("Submitting form...");
@@ -39,10 +72,10 @@ const AddTransaction = () => {
           amount: parseFloat(transactionAmount),
           category: "Dinning Out",
           date: new Date("2025-03-10").toISOString(),
-          note: transactionNote
+          note: transactionNote,
         },
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
@@ -56,10 +89,15 @@ const AddTransaction = () => {
         setTransactionDate(new Date());
         setTransactionNote("");
       }
-
     } catch (err) {
-      console.error("Error while adding transaction: ", err.response?.data || err.message);
-      Alert.alert("Adding transaction failed", err.response?.data?.message || "Something went wrong");
+      console.error(
+        "Error while adding transaction: ",
+        err.response?.data || err.message
+      );
+      Alert.alert(
+        "Adding transaction failed",
+        err.response?.data?.message || "Something went wrong"
+      );
     } finally {
       setIsLoading(false);
     }

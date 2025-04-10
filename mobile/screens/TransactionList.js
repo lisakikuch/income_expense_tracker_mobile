@@ -15,8 +15,18 @@ import globalStyles from "../shared/GlobalStyles";
 
 // Month/year picker options
 const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 const YEARS = [2023, 2024, 2025, 2026, 2027];
 
@@ -84,10 +94,14 @@ const TransactionList = ({ navigation }) => {
       contentContainerStyle={{ paddingBottom: 40 }}
     >
       {/* Calendar Picker Button */}
-      <TouchableOpacity onPress={toggleMonthPicker} style={globalStyles.calendarButton}>
+      <TouchableOpacity
+        onPress={toggleMonthPicker}
+        style={globalStyles.calendarButton}
+      >
         <Ionicons name="calendar-outline" size={24} color="black" />
         <Text style={globalStyles.monthText}>
-          {MONTH_NAMES[selectedMonthDate.getMonth()]} {selectedMonthDate.getFullYear()}
+          {MONTH_NAMES[selectedMonthDate.getMonth()]}{" "}
+          {selectedMonthDate.getFullYear()}
         </Text>
       </TouchableOpacity>
 
@@ -96,11 +110,15 @@ const TransactionList = ({ navigation }) => {
         <View style={globalStyles.pickerContainer}>
           <View style={globalStyles.monthGrid}>
             {MONTH_NAMES.map((name, index) => (
-              <TouchableOpacity key={name} onPress={() => handleMonthChange(index)}>
+              <TouchableOpacity
+                key={name}
+                onPress={() => handleMonthChange(index)}
+              >
                 <Text
                   style={[
                     globalStyles.pickerItem,
-                    selectedMonthDate.getMonth() === index && globalStyles.activeItem,
+                    selectedMonthDate.getMonth() === index &&
+                      globalStyles.activeItem,
                   ]}
                 >
                   {name}
@@ -111,11 +129,15 @@ const TransactionList = ({ navigation }) => {
 
           <View style={globalStyles.yearRow}>
             {YEARS.map((year) => (
-              <TouchableOpacity key={year} onPress={() => handleYearChange(year)}>
+              <TouchableOpacity
+                key={year}
+                onPress={() => handleYearChange(year)}
+              >
                 <Text
                   style={[
                     globalStyles.pickerItem,
-                    selectedMonthDate.getFullYear() === year && globalStyles.activeItem,
+                    selectedMonthDate.getFullYear() === year &&
+                      globalStyles.activeItem,
                   ]}
                 >
                   {year}
@@ -129,18 +151,34 @@ const TransactionList = ({ navigation }) => {
       {/* Expense/Income Toggle */}
       <View style={globalStyles.toggleContainer}>
         <TouchableOpacity
-          style={[globalStyles.toggleButton, transactionType === "Expense" && globalStyles.activeButton]}
+          style={[
+            globalStyles.toggleButton,
+            transactionType === "Expense" && globalStyles.activeButton,
+          ]}
           onPress={() => setTransactionType("Expense")}
         >
-          <Text style={[globalStyles.toggleText, transactionType === "Expense" && globalStyles.activeText]}>
+          <Text
+            style={[
+              globalStyles.toggleText,
+              transactionType === "Expense" && globalStyles.activeText,
+            ]}
+          >
             Expense
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[globalStyles.toggleButton, transactionType === "Income" && globalStyles.activeButton]}
+          style={[
+            globalStyles.toggleButton,
+            transactionType === "Income" && globalStyles.activeButton,
+          ]}
           onPress={() => setTransactionType("Income")}
         >
-          <Text style={[globalStyles.toggleText, transactionType === "Income" && globalStyles.activeText]}>
+          <Text
+            style={[
+              globalStyles.toggleText,
+              transactionType === "Income" && globalStyles.activeText,
+            ]}
+          >
             Income
           </Text>
         </TouchableOpacity>

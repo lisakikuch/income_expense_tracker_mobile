@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { useAuth } from '../contexts/AuthContext';
-import globalStyles from '../shared/GlobalStyles';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../contexts/AuthContext";
+import globalStyles from "../shared/GlobalStyles";
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");

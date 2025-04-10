@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { PieChart } from "react-native-chart-kit";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
@@ -14,8 +9,18 @@ import globalStyles from "../shared/GlobalStyles";
 
 // Arrays for month names and year range
 const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 const YEARS = [2023, 2024, 2025, 2026, 2027];
 
@@ -53,7 +58,7 @@ const ReportScreen = () => {
         // Group data by category
         const grouped = {};
         let total = 0;
-        data.forEach(tx => {
+        data.forEach((tx) => {
           const category = tx.category;
           grouped[category] = (grouped[category] || 0) + tx.amount;
           total += tx.amount;
@@ -61,8 +66,12 @@ const ReportScreen = () => {
 
         // Format for PieChart
         const colors = [
-          "#4A90E2", "#F28B82", "#34A853",
-          "#FFB74D", "#A67EBF", "#FFD700"
+          "#4A90E2",
+          "#F28B82",
+          "#34A853",
+          "#FFB74D",
+          "#A67EBF",
+          "#FFD700",
         ];
         const pie = Object.keys(grouped).map((category, index) => ({
           name: category,
@@ -85,7 +94,7 @@ const ReportScreen = () => {
   }, [transactionType, transactionMonth, userId, token]);
 
   // Toggle calendar dropdown
-  const toggleMonthPicker = () => setShowMonthPicker(prev => !prev);
+  const toggleMonthPicker = () => setShowMonthPicker((prev) => !prev);
 
   // Set selected month
   const handleMonthChange = (monthIndex) => {
