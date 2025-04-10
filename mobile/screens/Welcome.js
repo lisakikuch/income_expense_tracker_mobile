@@ -1,19 +1,14 @@
-import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import globalStyles from "../shared/GlobalStyles";
+import React from 'react';
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+
 
 const Welcome = ({ navigation }) => {
   return (
-    <SafeAreaView style={globalStyles.welcomeContainer}>
-      {/* App Icon  */}
-      <Ionicons
-        name="stats-chart-outline"
-        size={100}
-        color="#fff"
-        style={globalStyles.welcomeLogo}
-      />
+    <SafeAreaView style={styles.container}>
+      Logo
+      <Ionicons name="stats-chart-outline" size={100} color="#fff" style={styles.logo} />
 
       {/* Title and Subtitle */}
       <Text style={globalStyles.welcomeTitle}>Finance Tracker</Text>

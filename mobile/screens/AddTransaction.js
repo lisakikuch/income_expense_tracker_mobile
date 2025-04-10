@@ -61,7 +61,7 @@ const AddTransaction = () => {
         `${API_URL}/transactions/`,
         {
           userID: userId,
-          type: "Expense",
+          type: transactionType,
           amount: parseFloat(transactionAmount),
           category: "Dinning Out",
           date: new Date("2025-03-10").toISOString(),
@@ -141,5 +141,4 @@ const AddTransaction = () => {
     </View>
   );
 };
-
 export default AddTransaction;

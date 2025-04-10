@@ -21,7 +21,17 @@ const ReportScreen = () => {
   const [selectedMonthDate, setSelectedMonthDate] = useState(new Date());
   const [transactionMonth, setTransactionMonth] = useState("");
   const [transactionType, setTransactionType] = useState("Expense");
-  const [transactions, setTransactions] = useState([]);
+
+  // Backend friendly format (e.g., "2025-3") used in the API query
+  const [transactionMonth, setTransactionMonth] = useState("2025-3");
+
+  // User friendly format shown in the UI (e.g., "September 2025")
+  const [selectedMonth, setSelectedMonth] = useState("September 2025");
+
+  // Modal visibility for month selection
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // Pie chart data formatted from grouped transaction data
   const [pieData, setPieData] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
