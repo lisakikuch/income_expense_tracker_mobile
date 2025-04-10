@@ -1,87 +1,42 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-
+import React from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import globalStyles from "../shared/GlobalStyles";
 
 const Welcome = ({ navigation }) => {
   return (
-    <SafeAreaView style={styles.container}>
-      Logo
-      <Ionicons name="stats-chart-outline" size={100} color="#fff" style={styles.logo} />
+    <SafeAreaView style={globalStyles.welcomeContainer}>
+      {/* App Icon  */}
+      <Ionicons
+        name="stats-chart-outline"
+        size={100}
+        color="#fff"
+        style={globalStyles.welcomeLogo}
+      />
 
       {/* Title and Subtitle */}
-      <Text style={styles.title}>Finance Tracker</Text>
-      <Text style={styles.subtitle}>
+      <Text style={globalStyles.welcomeTitle}>Finance Tracker</Text>
+      <Text style={globalStyles.welcomeSubtitle}>
         Track your finances effortlessly and start saving today!
       </Text>
 
-      {/* Navigation Buttons */}
+      {/* Login and Sign Up buttons */}
       <TouchableOpacity
-        style={styles.loginButton}
-        onPress={() => navigation.navigate('Login')}
+        style={globalStyles.welcomeLoginButton}
+        onPress={() => navigation.navigate("Login")}
       >
-        <Text style={styles.loginButtonText}>Log In</Text>
+        <Text style={globalStyles.welcomeLoginButtonText}>Log In</Text>
       </TouchableOpacity>
+
       <TouchableOpacity
-        style={styles.signupButton}
-        onPress={() => navigation.navigate('SignUp')}
+        style={globalStyles.welcomeSignupButton}
+        onPress={() => navigation.navigate("SignUp")}
       >
-        <Text style={styles.signupButtonText}>Sign Up</Text>
+        <Text style={globalStyles.welcomeSignupButtonText}>Sign Up</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#6E72F1',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#fff',
-    marginBottom: 30,
-    textAlign: 'center',
-  },
-  loginButton: {
-    backgroundColor: '#fff',
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  loginButtonText: {
-    color: '#6E72F1',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  signupButton: {
-    borderColor: '#fff',
-    borderWidth: 2,
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    borderRadius: 8,
-  },
-  signupButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-});
 
 export default Welcome;

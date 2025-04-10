@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { API_URL } from '@env';
 import axios from 'axios';
+import globalStyles from '../shared/GlobalStyles';
 
 const SignUp = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSignUp = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -22,21 +23,21 @@ const SignUp = ({ navigation }) => {
 
     if (password.length < 6) {
       Alert.alert("Password must be at least 6 characters long");
+      return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      Alert.alert("Passwords do not match");
       return;
     }
 
     if (!acceptedTerms) {
-      Alert.alert("Error", "Please agree to the Terms & Conditions");
+      Alert.alert("Please agree to the Terms & Conditions");
       return;
     }
 
     try {
       setIsLoading(true);
-
       const res = await axios.post(`${API_URL}/auth/register`, {
         email,
         password,
@@ -47,7 +48,7 @@ const SignUp = ({ navigation }) => {
         navigation.navigate("Login");
       }
     } catch (err) {
-      console.error("Sign Up Error: ", err.response?.data || err.message);
+      console.error("Sign Up Error:", err.response?.data || err.message);
       Alert.alert(
         "Sign Up Failed",
         err.response?.data?.message || "Something went wrong"
@@ -57,33 +58,25 @@ const SignUp = ({ navigation }) => {
     }
   };
 
-  const CustomCheckbox = ({ value, onValueChange }) => {
-    return (
-      <TouchableOpacity
-        onPress={() => onValueChange(!value)}
-        style={{
-          width: 24,
-          height: 24,
-          borderWidth: 2,
-          borderColor: "#6E72F1",
-          backgroundColor: value ? "#6E72F1" : "white",
-          marginRight: 8,
-        }}
-      />
-    );
-  };
+  const CustomCheckbox = ({ value, onValueChange }) => (
+    <TouchableOpacity
+      onPress={() => onValueChange(!value)}
+      style={globalStyles.checkbox}
+    />
+  );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Create Account</Text>
-      <Text style={styles.subtitle}>
+    <SafeAreaView style={globalStyles.authContainer}>
+      <Text style={globalStyles.authTitle}>Create Account</Text>
+      <Text style={globalStyles.authSubtitle}>
         Create your account to manage your finances.
       </Text>
 
-      <View style={styles.inputContainer}>
+      {/* Email Input */}
+      <View style={globalStyles.inputContainer}>
         <Ionicons name="mail-outline" size={20} color="#666" />
         <TextInput
-          style={styles.input}
+          style={globalStyles.input}
           placeholder="Your email address"
           autoCapitalize="none"
           value={email}
@@ -91,10 +84,11 @@ const SignUp = ({ navigation }) => {
         />
       </View>
 
-      <View style={styles.inputContainer}>
+      {/* Password Input */}
+      <View style={globalStyles.inputContainer}>
         <Ionicons name="lock-closed-outline" size={20} color="#666" />
         <TextInput
-          style={styles.input}
+          style={globalStyles.input}
           placeholder="Create a password"
           secureTextEntry
           value={password}
@@ -102,10 +96,11 @@ const SignUp = ({ navigation }) => {
         />
       </View>
 
-      <View style={styles.inputContainer}>
+      {/* Confirm Password */}
+      <View style={globalStyles.inputContainer}>
         <Ionicons name="lock-closed-outline" size={20} color="#666" />
         <TextInput
-          style={styles.input}
+          style={globalStyles.input}
           placeholder="Re-enter your password"
           secureTextEntry
           value={confirmPassword}
@@ -113,95 +108,39 @@ const SignUp = ({ navigation }) => {
         />
       </View>
 
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      {/* Terms Checkbox */}
+      <View style={globalStyles.checkboxContainer}>
         <CustomCheckbox
           value={acceptedTerms}
           onValueChange={setAcceptedTerms}
         />
         <Text>I agree with</Text>
         <TouchableOpacity>
-          <Text> Terms & Conditions</Text>
+          <Text style={globalStyles.linkText}> Terms & Conditions</Text>
         </TouchableOpacity>
       </View>
 
+      {/* Submit Button */}
       {isLoading ? (
         <ActivityIndicator />
       ) : (
-        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-          <Text style={styles.buttonText}>Sign Up</Text>
+        <TouchableOpacity
+          style={globalStyles.primaryButton}
+          onPress={handleSignUp}
+        >
+          <Text style={globalStyles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
       )}
 
-      <Text style={styles.footerText}>
+      {/* Link to login */}
+      <Text style={globalStyles.footerText}>
         Already registered?{" "}
         <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.linkText}>Log In</Text>
+          <Text style={globalStyles.linkText}>Log In</Text>
         </TouchableOpacity>
       </Text>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    justifyContent: "center",
-    padding: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#F0F0F0",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 15,
-  },
-  input: {
-    flex: 1,
-    marginLeft: 10,
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  checkboxLabel: {
-    marginLeft: 8,
-  },
-  button: {
-    backgroundColor: "#6E72F1",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  footerText: {
-    marginTop: 15,
-    textAlign: "center",
-    color: "#666",
-  },
-  linkText: {
-    color: "#6E72F1",
-    fontWeight: "bold",
-  },
-});
 
 export default SignUp;
