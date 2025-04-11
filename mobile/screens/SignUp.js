@@ -13,6 +13,7 @@ const SignUp = ({ navigation }) => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const handleSignUp = async () => {
+    // Input Validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(email)) {
@@ -36,7 +37,8 @@ const SignUp = ({ navigation }) => {
 
     try {
       setIsLoading(true);
-
+      // Send a POST request with input email and pw to the backend
+      // to create a new account
       const res = await axios.post(`${API_URL}/auth/register`, {
         email,
         password,

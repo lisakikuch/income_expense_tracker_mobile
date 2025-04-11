@@ -51,13 +51,15 @@ const TransactionList = ({ navigation }) => {
       setTransactionMonth(`2025-${index}`); // Set format like "2025-3"
     }, [selectedMonth]);
 
+  // Re-fetch when returning from another screen to ensure data stay in sync with the backend
+  // or dependencies change
   useFocusEffect(
     useCallback(() => {
       const fetchTransactionData = async () => {
         try {
           setIsLoading(true);
 
-          // Send a GET request to get transaction data associated with the user by type + month
+          // Send a GET request to get transaction data associated with the user by type + month wtih JWT
           const res = await axios.get(
             `${API_URL}/transactions?type=${transactionType}&month=${transactionMonth}&userID=${userId}`,
             { headers: { Authorization: `Bearer ${token}` } }
@@ -127,6 +129,7 @@ const TransactionList = ({ navigation }) => {
       ) : transactions.length === 0 ? (
         <Text>No Transaction Data to Show</Text>
       ) : (
+        // Display fetched data in FlatList with Object ID as a key
         <FlatList
           style={styles.transactionList}
           data={transactions}
@@ -144,9 +147,11 @@ const TransactionList = ({ navigation }) => {
               </View>
               <TouchableOpacity
                 style={styles.editButton}
+                // Navigate to TransactionDetails screen with the selected item object
                 onPress={() => {
                   navigation.navigate("TransactionDetails", {
                     transaction: item,
+                    // Update UI as soon as the value in TransactionDetails is updated
                     onUpdate: (payload) => {
                       if (payload.deletedId) {
                         setTransactions((prev) =>

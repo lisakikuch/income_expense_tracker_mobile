@@ -17,7 +17,9 @@ export const AuthProvider = ({ children }) => {
 
     console.log("API_URL: ", API_URL);
 
+    // Run once on app load
     useEffect(() => {
+        // Retrieve saved user & token from secure storagge (from the previous session)
         const loadStoreData = async () => {
             const storedToken = await SecureStore.getItemAsync('jwtToken');
             const storedUser = await SecureStore.getItemAsync('userData');
@@ -30,27 +32,33 @@ export const AuthProvider = ({ children }) => {
         loadStoreData();
     }, []);
 
+    // Send a login request to the backend with input email and pw
     const login = async (email, password) => {
         try {
             const res = await axios.post(`${API_URL}/auth/login`, { email, password });
 
+            // If successful:
             const { user, token } = res.data;
-
+            
             await SecureStore.setItemAsync('jwtToken', token);
             await SecureStore.setItemAsync('userData', JSON.stringify(user));
 
+            // Save user data and token
             setUser(user);
             setToken(token);
 
             console.log(JSON.stringify(user));
 
+        // If failed: throw an exception
         } catch (err) {
             console.error("Login Failed: ", err);
             throw new Error("Invalid Credentials");
         }
     };
 
+    // Logout
     const logout = async () => {
+        // Simply delete user data & token from secure storage
         await SecureStore.deleteItemAsync('jwtToken');
         await SecureStore.deleteItemAsync('userData');
         setUser(null);
@@ -58,10 +66,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
+        // Make the user, token and authentication functions (login/logout) available
+        // to all child components
         <AuthContext.Provider value={{ user, token, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
 };
 
+// Custom hook to make it easier to access auth state and functions
 export const useAuth = () => React.useContext(AuthContext);

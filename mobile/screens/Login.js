@@ -10,6 +10,7 @@ const Login = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
+  // Call a login function from AuthContext
   const handleLogin = async () => {
     try {
       setIsLoading(true);

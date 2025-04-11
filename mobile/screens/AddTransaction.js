@@ -97,7 +97,7 @@ const AddTransaction = () => {
 
     try {
       setIsLoading(true);
-
+      // Send a POST request to create a new transaction with logged in user ID + JWT
       const res = await axios.post(
         `${API_URL}/transactions/`,
         {

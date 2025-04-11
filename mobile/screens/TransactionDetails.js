@@ -91,6 +91,7 @@ const TransactionDetails = ({ route, navigation }) => {
       setIsLoading(true);
 
       console.log(`${API_URL}/transactions/${transactionId}`);
+      // Send a PUT request to the backend to update the data + JWT
       const res = await axios.put(
         `${API_URL}/transactions/${transactionId}`,
         {
@@ -126,6 +127,7 @@ const TransactionDetails = ({ route, navigation }) => {
     try {
       setIsLoading(true);
 
+      // Send a DELETE request to the backend + JWT
       console.log(`${API_URL}/transactions/${transactionId}`);
       const res = await axios.delete(
         `${API_URL}/transactions/${transactionId}`,
