@@ -5,15 +5,16 @@ A full-stack mobile finance tracking application that helps users securely manag
 Available here!:<br> 🔗 **Expo**: [https://expo.dev/accounts/lisa55555/projects/mobile/updates/512aeac9-9d30-4e91-b51e-9c8cbe502a44](https://expo.dev/accounts/lisa55555/projects/mobile/updates/512aeac9-9d30-4e91-b51e-9c8cbe502a44)
 
 ## 🧰 Tech Stack
-- **Frontend (Mobile):** React Native, React Navigation, useContext (State management), AsyncStorage, Axious (Fetch API), Expo
+- **Frontend (Mobile):** React Native, React Navigation, useContext (State management), AsyncStorage, Axios (Fetch API), Expo
 - **Backend:** Node.js, Express.js, MongoDB, Mongoose
-- **Authentication:** JWT, bcrypt
+- **Authentication:** JWT (session management), bcrypt (password hashing)  
 - **Deployment:** Render (backend), MongoDB Atlas (database)
 
 ## ✨ Features
 
 ### ✅ Regular User (Completed)
 - Register and log in with secure JWT-based authentication
+- Secure password storage using bcrypt hashing  
 - Add, edit, and delete income/expense transactions
 - View monthly transaction history and summary
 - Mobile-friendly UI with React Native
