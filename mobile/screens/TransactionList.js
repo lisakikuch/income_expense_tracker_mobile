@@ -7,7 +7,7 @@ import axios from "axios";
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
 
-const TransactionList = ({ navigation }) => {
+const TransactionList = ({ navigation, route }) => {
   // Save fetched transaction data
   const [transactions, setTransactions] = useState([]);
 
@@ -22,8 +22,10 @@ const TransactionList = ({ navigation }) => {
   console.log("User: ", user);
   console.log("Token: ", token);
 
-  // Extract the user ID from the user object above
-  const userId = user?._id;
+  // If there's a selectedUserId passed through navigation, use that. 
+  // If not, use the currently logged-in user’s ID.
+  const userId = route.params?.selectedUserId || user?._id;
+  console.log("userId: ", userId);
 
   // Display activity indicator while loading
   const [isLoading, setIsLoading] = useState(false);
@@ -46,10 +48,10 @@ const TransactionList = ({ navigation }) => {
   const [selectedMonth, setSelectedMonth] = useState("March 2025");
   const [modalVisible, setModalVisible] = useState(false);
 
-    useEffect(() => {
-      const index = months.indexOf(selectedMonth) + 1; // Convert month name to index
-      setTransactionMonth(`2025-${index}`); // Set format like "2025-3"
-    }, [selectedMonth]);
+  useEffect(() => {
+    const index = months.indexOf(selectedMonth) + 1; // Convert month name to index
+    setTransactionMonth(`2025-${index}`); // Set format like "2025-3"
+  }, [selectedMonth]);
 
   // Re-fetch when returning from another screen to ensure data stay in sync with the backend
   // or dependencies change
@@ -138,38 +140,40 @@ const TransactionList = ({ navigation }) => {
             <View style={styles.transactionCard}>
               <View style={styles.transactionRow}>
                 <View>
-              <Text style={styles.transactionDate}>
-                {new Date(item.date).toLocaleDateString()}
-              </Text>
-              <Text>{item.category}</Text>
-              {item.note ? <Text>{item.note}</Text> : null}
-              <Text>${item.amount.toFixed(2)}</Text>
-              </View>
-              <TouchableOpacity
-                style={styles.editButton}
-                // Navigate to TransactionDetails screen with the selected item object
-                onPress={() => {
-                  navigation.navigate("TransactionDetails", {
-                    transaction: item,
-                    // Update UI as soon as the value in TransactionDetails is updated
-                    onUpdate: (payload) => {
-                      if (payload.deletedId) {
-                        setTransactions((prev) =>
-                          prev.filter((txn) => txn._id !== payload.deletedId)
-                        );
-                      } else {
-                        setTransactions((prev) =>
-                          prev.map((txn) =>
-                            txn._id === payload._id ? payload : txn
-                          )
-                        );
-                      }
-                    },
-                  });
-                }}
-              >
-                <Text style={styles.editButtonText}>Edit</Text>
-              </TouchableOpacity>
+                  <Text style={styles.transactionDate}>
+                    {new Date(item.date).toLocaleDateString()}
+                  </Text>
+                  <Text>{item.category}</Text>
+                  {item.note ? <Text>{item.note}</Text> : null}
+                  <Text>${item.amount.toFixed(2)}</Text>
+                </View>
+                {userId === user._id && (
+                <TouchableOpacity
+                  style={styles.editButton}
+                  // Navigate to TransactionDetails screen with the selected item object
+                  onPress={() => {
+                    navigation.navigate("TransactionDetails", {
+                      transaction: item,
+                      // Update UI as soon as the value in TransactionDetails is updated
+                      onUpdate: (payload) => {
+                        if (payload.deletedId) {
+                          setTransactions((prev) =>
+                            prev.filter((txn) => txn._id !== payload.deletedId)
+                          );
+                        } else {
+                          setTransactions((prev) =>
+                            prev.map((txn) =>
+                              txn._id === payload._id ? payload : txn
+                            )
+                          );
+                        }
+                      },
+                    });
+                  }}
+                >
+                  <Text style={styles.editButtonText}>Edit</Text>
+                </TouchableOpacity>
+                )}
               </View>
             </View>
           )}
@@ -338,7 +342,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },  
+  },
 });
 
 export default TransactionList;

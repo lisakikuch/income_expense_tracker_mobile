@@ -38,13 +38,13 @@ export const AuthProvider = ({ children }) => {
             const res = await axios.post(`${API_URL}/auth/login`, { email, password });
 
             // If successful:
-            const { user, token } = res.data;
+            const { user: fetchedUser, token } = res.data;
             
             await SecureStore.setItemAsync('jwtToken', token);
-            await SecureStore.setItemAsync('userData', JSON.stringify(user));
+            await SecureStore.setItemAsync('userData', JSON.stringify(fetchedUser));
 
             // Save user data and token
-            setUser(user);
+            setUser(fetchedUser);
             setToken(token);
 
             console.log(JSON.stringify(user));

@@ -5,7 +5,7 @@ const cors = require('cors');
 
 const connectDB = require('./config/db');
 const transactionRoutes = require('./routes/transactionRoutes');
-// const userRoutes = require('./routes/userRoutes');
+const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 
 const app = express();
@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use('/transactions', transactionRoutes);
-// app.use('/users', userRoutes);
+app.use('/users', userRoutes);
 app.use('/auth', authRoutes);
 
 app.get('/', (req, res) => {

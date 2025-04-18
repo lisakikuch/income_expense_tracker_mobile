@@ -22,6 +22,7 @@ import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 import AddTransaction from '../screens/AddTransaction';
 import TransactionDetails from '../screens/TransactionDetails';
+import UserList from '../screens/UserList';
 
 // Create Stacks and Tab
 const Stack = createStackNavigator();
@@ -42,7 +43,7 @@ const AuthStack = () => (
 const TransactionStackScreen = () => (
     <TransactionStack.Navigator screenOptions={{ headerShown: false }}>
         <TransactionStack.Screen
-            name="TransactionList"
+            name="TransactionMain"
             component={TransactionList}
             options={{ title: "Transaction List" }}
         />
@@ -100,13 +101,21 @@ const MainTabs = () => {
     );
 };
 
+const AdminStack = () => (
+    <Stack.Navigator initialRouteName="UserList" screenOptions={{ headerShown: true }}>
+        <Stack.Screen component={UserList} name="UserList" options={{ title: "Manage Users" }} />
+        <Stack.Screen component={TransactionList} name="TransactionList" options={{ title: "User Transaction" }} />
+    </Stack.Navigator>
+);
+
 // Display the stack after authentication if the user is logged in
 // Otherwise bring the user back to the stack before authentication
 const AppNavigator = () => {
     const { user } = useAuth();
     return (
         <NavigationContainer>
-            {!user ? <AuthStack /> : <MainTabs />}
+            {!user ? <AuthStack /> :
+                (user.role !== "Admin" ? <MainTabs /> : <AdminStack />)}
         </NavigationContainer>
     );
 };
