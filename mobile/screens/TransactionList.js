@@ -41,6 +41,7 @@ const TransactionList = ({ navigation, route }) => {
     setTransactionMonth(selectedMonth);
   }, [selectedMonth]);
 
+  // Dropdown menu
   const INCOMECATEGORIES = [
     "All",
     "Salary",
@@ -155,7 +156,7 @@ const TransactionList = ({ navigation, route }) => {
                 onPress={() => setModalVisible(false)}
                 style={styles.cancelButton}
               >
-                <Text style={styles.cancelText}>Cancel</Text>
+                <Text style={styles.cancelText}>Close</Text>
               </TouchableOpacity>
             </View>
           </View>

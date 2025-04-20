@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { API_URL } from '@env';
@@ -11,6 +11,7 @@ const SignUp = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleSignUp = async () => {
     // Input Validation
@@ -121,8 +122,10 @@ const SignUp = ({ navigation }) => {
           onValueChange={setAcceptedTerms}
         />
         <Text>I agree with</Text>
-        <TouchableOpacity>
-          <Text> Terms & Conditions</Text>
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.termsAndConditions}> Terms & Conditions</Text>
         </TouchableOpacity>
       </View>
 
@@ -140,6 +143,26 @@ const SignUp = ({ navigation }) => {
           <Text style={styles.linkText}>Log In</Text>
         </TouchableOpacity>
       </Text>
+
+      {/* Terms & Conditions Modal */}
+      <Modal visible={modalVisible} animationType="slide" transparent={true}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Terms & Conditions</Text>
+            <Text style={styles.termsAndConditionsText}>
+            Your data is securely stored by Apeksha & Lisa 🔐 {'\n'}
+            {'\n'}
+            We don’t judge your personal spending habits 👀
+            </Text>
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={styles.cancelButton}
+            >
+              <Text style={styles.cancelText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -202,6 +225,41 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: "#6E72F1",
+    fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    width: 300,
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  termsAndConditions: {
+    color: "#6E72F1", 
+    fontWeight: "bold"
+  },
+  termsAndConditionsText: {
+    fontSize: 16,
+    marginVertical: 10,
+  },
+  cancelButton: {
+    marginTop: 10,
+    padding: 10,
+  },
+  cancelText: {
+    fontSize: 16,
+    color: "red",
     fontWeight: "bold",
   },
 });

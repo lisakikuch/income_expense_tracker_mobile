@@ -1,9 +1,16 @@
+// .env
 require('dotenv').config();
 
+// Middleware
 const express = require('express');
 const cors = require('cors');
+const morgan = require('morgan');
+const { generalLimiter } = require('./middleware/rateLimiter');
 
+// DB
 const connectDB = require('./config/db');
+
+// Routes
 const transactionRoutes = require('./routes/transactionRoutes');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -32,6 +39,8 @@ app.use(cors({
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(morgan('dev'));
+app.use(generalLimiter);
 
 app.use('/transactions', transactionRoutes);
 app.use('/users', userRoutes);
