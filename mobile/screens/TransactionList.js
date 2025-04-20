@@ -4,18 +4,11 @@ import { useAuth } from "../contexts/AuthContext";
 import { API_URL } from '@env';
 
 import axios from "axios";
+import { Dropdown } from 'react-native-element-dropdown';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
 
 const TransactionList = ({ navigation, route }) => {
-  // Save fetched transaction data
-  const [transactions, setTransactions] = useState([]);
-
-  // Switch between Expense/Income
-  const [transactionType, setTransactionType] = useState("Expense");
-
-  // Set a month (e.g. 2025-3)
-  const [transactionMonth, setTransactionMonth] = useState("2025-3");
 
   // Logged in user's info + jwt
   const { user, token } = useAuth();
@@ -27,31 +20,64 @@ const TransactionList = ({ navigation, route }) => {
   const userId = route.params?.selectedUserId || user?._id;
   console.log("userId: ", userId);
 
-  // Display activity indicator while loading
+  // Calendar
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+  const defaultMonth = `${currentYear}-${currentMonth}`;
+
+  const [transactions, setTransactions] = useState([]);
+  const [transactionType, setTransactionType] = useState("Expense");
+  const [transactionCategory, setTransactionCategory] = useState("");
+  const [transactionMonth, setTransactionMonth] = useState(defaultMonth);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Month Picker
-  const months = [
-    "January 2025",
-    "February 2025",
-    "March 2025",
-    "April 2025",
-    "May 2025",
-    "June 2025",
-    "July 2025",
-    "August 2025",
-    "September 2025",
-    "October 2025",
-    "November 2025",
-    "December 2025",
-  ];
-  const [selectedMonth, setSelectedMonth] = useState("March 2025");
+  const [selectedMonth, setSelectedMonth] = useState(defaultMonth);
   const [modalVisible, setModalVisible] = useState(false);
 
+  const months = Array.from({ length: 12 }, (_, i) => `${currentYear}-${i + 1}`);
+
   useEffect(() => {
-    const index = months.indexOf(selectedMonth) + 1; // Convert month name to index
-    setTransactionMonth(`2025-${index}`); // Set format like "2025-3"
+    setTransactionMonth(selectedMonth);
   }, [selectedMonth]);
+
+  const INCOMECATEGORIES = [
+    "All",
+    "Salary",
+    "Bonus",
+    "Freelance",
+    "Investment Returns",
+    "Rental Income",
+    "Business Income",
+    "Gift",
+    "Refunds/Reimbursements",
+    "Other Income"];
+  const formattedIncomeCategories = INCOMECATEGORIES.map((item) => ({
+    label: item,
+    value: item === "All" ? "" : item
+  }));
+
+  const EXPENSECATEGORIES = [
+    "All",
+    "Housing",
+    "Utilities",
+    "Groceries",
+    "Dining Out",
+    "Transportation",
+    "Entertainment",
+    "Healthcare",
+    "Education",
+    "Personal Care",
+    "Shopping", "Travel",
+    "Debt Payments",
+    "Savings & Investments",
+    "Donations",
+    "Other Expenses"
+  ];
+  const formattedExpenseCategories = EXPENSECATEGORIES.map((item) => ({
+    label: item,
+    value: item === "All" ? "" : item
+  }));
 
   // Re-fetch when returning from another screen to ensure data stay in sync with the backend
   // or dependencies change
@@ -62,10 +88,17 @@ const TransactionList = ({ navigation, route }) => {
           setIsLoading(true);
 
           // Send a GET request to get transaction data associated with the user by type + month wtih JWT
-          const res = await axios.get(
-            `${API_URL}/transactions?type=${transactionType}&month=${transactionMonth}&userID=${userId}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
+          const res = await axios.get(`${API_URL}/transactions`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            },
+            params: {
+              type: transactionType,
+              month: transactionMonth,
+              category: transactionCategory,
+              userID: userId,
+            }
+          });
 
           // Save the fetched transaction data
           setTransactions(res.data);
@@ -79,105 +112,130 @@ const TransactionList = ({ navigation, route }) => {
       if (userId && token) {
         fetchTransactionData();
       }
-    }, [transactionType, transactionMonth, userId, token])
+    }, [transactionType, transactionMonth, transactionCategory, userId, token])
   );
 
   return (
     <View style={styles.container}>
 
-      {/* Month Selector */}
-      <TouchableOpacity
-        onPress={() => setModalVisible(true)}
-        style={styles.calendarButton}
-      >
-        <Ionicons name="calendar-outline" size={24} color="black" />
-        <Text style={styles.monthText}>{selectedMonth}</Text>
-      </TouchableOpacity>
+      <View style={styles.headerContainer}>
 
-      {/* Month Selector Modal */}
-      <Modal visible={modalVisible} animationType="slide" transparent={true}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select a Month</Text>
-            <FlatList
-              data={months}
-              keyExtractor={(item) => item}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.monthOption}
-                  onPress={() => {
-                    setSelectedMonth(item);
-                    setModalVisible(false);
-                  }}
-                >
-                  <Text style={styles.monthOptionText}>{item}</Text>
-                </TouchableOpacity>
-              )}
-            />
-            <TouchableOpacity
-              onPress={() => setModalVisible(false)}
-              style={styles.cancelButton}
-            >
-              <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
+        <Text style={styles.subHeader}>{transactionType}</Text>
+
+        {/* Month Selector */}
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          style={styles.calendarButton}
+        >
+          <Ionicons name="calendar-outline" size={24} color="black" />
+          <Text style={styles.monthText}>{selectedMonth}</Text>
+        </TouchableOpacity>
+
+        {/* Month Selector Modal */}
+        <Modal visible={modalVisible} animationType="slide" transparent={true}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Select a Month</Text>
+              <FlatList
+                data={months}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.monthOption}
+                    onPress={() => {
+                      setSelectedMonth(item);
+                      setModalVisible(false);
+                    }}
+                  >
+                    <Text style={styles.monthOptionText}>{item}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                style={styles.cancelButton}
+              >
+                <Text style={styles.cancelText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      <Text style={styles.subHeader}>{transactionType}</Text>
+      </View>
 
       {isLoading ? (
         <ActivityIndicator />
       ) : transactions.length === 0 ? (
-        <Text>No Transaction Data to Show</Text>
+        <View>
+          <Dropdown
+            style={styles.input}
+            data={transactionType === "Income" ? formattedIncomeCategories : formattedExpenseCategories}
+            labelField="label"
+            valueField="value"
+            value={transactionCategory}
+            onChange={(item) => setTransactionCategory(item.value)}
+          />
+          <Text style={styles.noDataText}>No Transaction Data to Show</Text>
+        </View>
       ) : (
-        // Display fetched data in FlatList with Object ID as a key
-        <FlatList
-          style={styles.transactionList}
-          data={transactions}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <View style={styles.transactionCard}>
-              <View style={styles.transactionRow}>
-                <View>
-                  <Text style={styles.transactionDate}>
-                    {new Date(item.date).toLocaleDateString()}
-                  </Text>
-                  <Text>{item.category}</Text>
-                  {item.note ? <Text>{item.note}</Text> : null}
-                  <Text>${item.amount.toFixed(2)}</Text>
+        <View style={styles.contentArea}>
+          <Dropdown
+            style={styles.input}
+            placeholder="Select Category"
+            data={transactionType === "Income" ? formattedIncomeCategories : formattedExpenseCategories}
+            labelField="label"
+            valueField="value"
+            value={transactionCategory}
+            onChange={(item) => setTransactionCategory(item.value)}
+          />
+          <FlatList
+            style={styles.transactionList}
+            data={transactions}
+            keyExtractor={(item) => item._id}
+            contentContainerStyle={{ paddingBottom: 50 }}
+            renderItem={({ item }) => (
+              <View style={styles.transactionCard}>
+                <View style={styles.transactionRow}>
+                  <View>
+                    <Text style={styles.transactionDate}>
+                      {new Date(item.date).toLocaleDateString()}
+                    </Text>
+                    <Text>{item.category}</Text>
+                    {item.note ? <Text>{item.note}</Text> : null}
+                    <Text>${item.amount.toFixed(2)}</Text>
+                  </View>
+                  {userId === user._id && (
+                    <TouchableOpacity
+                      style={styles.editButton}
+                      // Navigate to TransactionDetails screen with the selected item object
+                      onPress={() => {
+                        navigation.navigate("TransactionDetails", {
+                          transaction: item,
+                          // Update UI as soon as the value in TransactionDetails is updated
+                          onUpdate: (payload) => {
+                            if (payload.deletedId) {
+                              setTransactions((prev) =>
+                                prev.filter((txn) => txn._id !== payload.deletedId)
+                              );
+                            } else {
+                              setTransactions((prev) =>
+                                prev.map((txn) =>
+                                  txn._id === payload._id ? payload : txn
+                                )
+                              );
+                            }
+                          },
+                        });
+                      }}
+                    >
+                      <Text style={styles.editButtonText}>Edit</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
-                {userId === user._id && (
-                <TouchableOpacity
-                  style={styles.editButton}
-                  // Navigate to TransactionDetails screen with the selected item object
-                  onPress={() => {
-                    navigation.navigate("TransactionDetails", {
-                      transaction: item,
-                      // Update UI as soon as the value in TransactionDetails is updated
-                      onUpdate: (payload) => {
-                        if (payload.deletedId) {
-                          setTransactions((prev) =>
-                            prev.filter((txn) => txn._id !== payload.deletedId)
-                          );
-                        } else {
-                          setTransactions((prev) =>
-                            prev.map((txn) =>
-                              txn._id === payload._id ? payload : txn
-                            )
-                          );
-                        }
-                      },
-                    });
-                  }}
-                >
-                  <Text style={styles.editButtonText}>Edit</Text>
-                </TouchableOpacity>
-                )}
               </View>
-            </View>
-          )}
-        />
+            )}
+          />
+        </View>
       )
       }
       <View style={styles.toggleContainer}>
@@ -186,7 +244,10 @@ const TransactionList = ({ navigation, route }) => {
             styles.toggleButton,
             transactionType === "Expense" && styles.activeButton,
           ]}
-          onPress={() => setTransactionType("Expense")}
+          onPress={() => {
+            setTransactionType("Expense")
+            setTransactionCategory("")
+          }}
         >
           <Text
             style={[
@@ -202,7 +263,10 @@ const TransactionList = ({ navigation, route }) => {
             styles.toggleButton,
             transactionType === "Income" && styles.activeButton,
           ]}
-          onPress={() => setTransactionType("Income")}
+          onPress={() => {
+            setTransactionType("Income")
+            setTransactionCategory("")
+          }}
         >
           <Text
             style={[
@@ -219,10 +283,19 @@ const TransactionList = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
+  contentArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     padding: 20,
     backgroundColor: "#F8F9FA",
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: "space-between",
+    alignItems: 'center',
+    paddingHorizontal: 5,
   },
   header: {
     padding: 15,
@@ -235,6 +308,16 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     color: "#fff",
+  },
+  noDataText: {
+    textAlign: "center",
+    marginBottom: 15
+  },
+  input: {
+    backgroundColor: "#E9ECEF",
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 15,
   },
   calendarButton: {
     flexDirection: "row",
@@ -320,7 +403,6 @@ const styles = StyleSheet.create({
   toggleContainer: {
     flexDirection: "row",
     justifyContent: "center",
-
   },
   toggleButton: {
     padding: 12,

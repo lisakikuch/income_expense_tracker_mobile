@@ -50,10 +50,16 @@ const ReportScreen = () => {
   // Fetch transactions and generate pie data
   const fetchTransactionData = async () => {
     try {
-      const res = await axios.get(
-        `${API_URL}/transactions?type=${transactionType}&month=${transactionMonth}&userID=${userId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await axios.get(`${API_URL}/transactions`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        params: {
+          type: transactionType,
+          month: transactionMonth,
+          userID: userId
+        }
+      });
 
       const data = res.data;
       setTransactions(data);
@@ -111,20 +117,25 @@ const ReportScreen = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
-      
-      {/* Month/Year Picker Toggle button */}
-      <TouchableOpacity onPress={toggleMonthPicker} style={styles.calendarButton}>
-        <Ionicons name="calendar-outline" size={24} color="black" />
-        <Text style={styles.monthText}>
-          {MONTH_NAMES[selectedMonthDate.getMonth()]} {selectedMonthDate.getFullYear()}
-        </Text>
-      </TouchableOpacity>
 
-      {/* Refresh Button */}
-      <TouchableOpacity onPress={fetchTransactionData} style={styles.refreshButton}>
-        <Ionicons name="refresh" size={20} color="black" />
-        <Text style={styles.refreshText}>Refresh</Text>
-      </TouchableOpacity>
+      <View style={styles.headerContainer}>
+
+        {/* Refresh Button */}
+        <TouchableOpacity onPress={fetchTransactionData} style={styles.refreshButton}>
+          <Ionicons name="refresh" size={20} color="#4A90E2" />
+          <Text style={styles.refreshText}>Refresh</Text>
+        </TouchableOpacity>
+
+
+        {/* Month/Year Picker Toggle button */}
+        <TouchableOpacity onPress={toggleMonthPicker} style={styles.calendarButton}>
+          <Ionicons name="calendar-outline" size={24} color="black" />
+          <Text style={styles.monthText}>
+            {MONTH_NAMES[selectedMonthDate.getMonth()]} {selectedMonthDate.getFullYear()}
+          </Text>
+        </TouchableOpacity>
+
+      </View>
 
       {/* Custom Month/Year Dropdown Picker UI */}
       {showMonthPicker && (
@@ -158,32 +169,6 @@ const ReportScreen = () => {
           </View>
         </View>
       )}
-
-      {/* Income/Expense Toggle */}
-      <View style={styles.toggleContainer}>
-        <TouchableOpacity
-          style={[styles.toggleButton, transactionType === "Expense" && styles.activeButton]}
-          onPress={() => setTransactionType("Expense")}
-        >
-          <Text style={[
-            styles.toggleText,
-            transactionType === "Expense" && styles.activeText,
-          ]}>
-            Expense
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.toggleButton, transactionType === "Income" && styles.activeButton]}
-          onPress={() => setTransactionType("Income")}
-        >
-          <Text style={[
-            styles.toggleText,
-            transactionType === "Income" && styles.activeText,
-          ]}>
-            Income
-          </Text>
-        </TouchableOpacity>
-      </View>
 
       {/* Summary Box */}
       <View style={styles.totalContainer}>
@@ -237,6 +222,31 @@ const ReportScreen = () => {
           No data available for this selection.
         </Text>
       )}
+      {/* Income/Expense Toggle */}
+      <View style={styles.toggleContainer}>
+        <TouchableOpacity
+          style={[styles.toggleButton, transactionType === "Expense" && styles.activeButton]}
+          onPress={() => setTransactionType("Expense")}
+        >
+          <Text style={[
+            styles.toggleText,
+            transactionType === "Expense" && styles.activeText,
+          ]}>
+            Expense
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.toggleButton, transactionType === "Income" && styles.activeButton]}
+          onPress={() => setTransactionType("Income")}
+        >
+          <Text style={[
+            styles.toggleText,
+            transactionType === "Income" && styles.activeText,
+          ]}>
+            Income
+          </Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
@@ -246,6 +256,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F8F9FA",
     padding: 20,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: "space-between",
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    // marginVertical: 10,
   },
   calendarButton: {
     flexDirection: "row",
@@ -265,6 +282,7 @@ const styles = StyleSheet.create({
   refreshText: {
     marginLeft: 5,
     fontSize: 14,
+    color: "#4A90E2",
   },
   pickerContainer: {
     marginBottom: 10,
@@ -299,6 +317,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     marginVertical: 10,
+    marginTop: 20,
   },
   toggleButton: {
     padding: 12,
@@ -325,7 +344,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
-    width: "80%",
+    width: "100%",
   },
   totalLabel: {
     fontSize: 18,

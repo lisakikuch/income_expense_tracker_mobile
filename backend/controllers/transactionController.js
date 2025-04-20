@@ -31,7 +31,7 @@ exports.createTransaction = async (req, res) => {
 };
 
 exports.getTransactions = async (req, res) => {
-    const { userID, type, month } = req.query;
+    const { userID, type, month, category } = req.query;
 
     try {
         let filter = {};
@@ -40,7 +40,10 @@ exports.getTransactions = async (req, res) => {
         }
         if (type) {
             filter.type = type;
-        };
+        }
+        if (category) {
+            filter.category = category;
+        }
         if (month) {
             const startDate = new Date(month);
             startDate.setUTCHours(0, 0, 0, 0); // Ensure start date is at UTC midnight
