@@ -5,25 +5,50 @@ A full-stack mobile finance tracking application that helps users securely manag
 Available here!:<br> 🔗 **Expo**: [https://expo.dev/accounts/lisa55555/projects/mobile/updates/512aeac9-9d30-4e91-b51e-9c8cbe502a44](https://expo.dev/accounts/lisa55555/projects/mobile/updates/512aeac9-9d30-4e91-b51e-9c8cbe502a44)
 
 ## 🧰 Tech Stack
-- **Frontend (Mobile):** React Native, React Navigation, useContext (State management), AsyncStorage, Axios (Fetch API), Expo
-- **Backend:** Node.js, Express.js, MongoDB, Mongoose
-- **Authentication:** JWT (session management), bcrypt (password hashing)  
-- **Deployment:** Render (backend), MongoDB Atlas (database)
+### 📱 Frontend (Mobile) <br />
+**Framework**: React Native with Expo <br />
+**Navigation**: React Navigation <br />
+**State Management**: useContext + SecureStore + AsyncStorage <br />
+**API Requests**: Axios <br />
+**UI Components**:
+- react-native-paper (Material Design components and icons)
+- react-native-element-dropdown (customizable dropdown menus)
+- react-native-chart-kit (charts and visualizations)
+**Deployment**: Expo <br />
+<br />
+
+### 🗄️ Backend <br />
+**Framework**: Node.js + Express.js <br />
+**Database**: MongoDB Atlas (cloud) + Mongoose (ODM) <br />
+**Authentication & Security**:
+- JWT (token-based auth)
+- bcryptjs (password hashing)
+- express-rate-limit (rate limiting)
+- dotenv (env management) <br />
+
+**Dev & Middleware Tools**:
+- Morgan (HTTP logging)
+- CORS (Cross-Origin Resource Sharing)
+- Nodemon (dev auto-restart) <br />
+
+**Deployment**: Render
+
 
 ## ✨ Features
 
-### ✅ Regular User (Completed)
+### ✅ Regular User 
 - Register and log in with secure JWT-based authentication
-- Secure password storage using bcrypt hashing  
+- Store passwords securely using bcrypt hashing
 - Add, edit, and delete income/expense transactions
-- View monthly transaction history and summary
-- Mobile-friendly UI with React Native
-- Persistent login with AsyncStorage
+- View monthly transaction history and summary with charts
+- Filter transactions by type, month, and category
+- Persistent login using AsyncStorage
 
-### 🚧 Admin User (In Progress)
-- View and manage all users
-- access to regular users' data
-- Role-based access control (backend logic and UI under development)
+### 👥 Admin User
+- View a list of all users
+- Delete users
+- Access and view data of regular users
+- Enforced role-based access control (RBAC)
 
 ## 🛠️ Setup
 ### 🗄️ Backend
@@ -46,7 +71,7 @@ JWT_SECRET=your_jwt_secret
 ```bash
 cd backend
 npm install
-nodemon index.js
+node index.js
 ```
 
 ### 📱 Frontend (Mobile)
@@ -85,7 +110,9 @@ backend/
 │   ├── transactionController.js
 │   └── userController.js
 ├── middleware/
-│   └── authMiddleware.js   # JWT authentication and role checking
+│   ├── authMiddleware.js   # JWT authentication and role checking
+|   ├── isAdmin.js          # Restrict access to admin-only routes
+|   ├── rateLimiter.js      # Limits repeated requests to prevent abuse
 ├── models/                 # Mongoose schemas for MongoDB
 │   ├── transactionModel.js
 │   └── userModel.js
@@ -115,6 +142,7 @@ mobile/                     # React Native
 │   ├── SignUp.js
 │   ├── TransactionDetails.js
 │   ├── TransactionList.js
+|   ├── UserList.js         # Admin-only
 │   └── Welcome.js          # Landing screen
 ├── shared/                 # Styling
 ├── .env

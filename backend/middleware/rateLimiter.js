@@ -10,7 +10,7 @@ const generalLimiter = rateLimit({
 // Strict limiter for register/login
 const registerLoginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 5,
+    max: 15,
     message: "Too many attempts. Please try again in 15 minutes.",
   });
 
