@@ -35,20 +35,23 @@ Available here!:<br> 🔗 **Expo**: [https://expo.dev/accounts/lisa55555/project
 
 
 ## ✨ Features
+- Register and log in with secure **JWT-based authentication**
+- Store passwords securely using **bcrypt hashing** 
+- Persistent login using **AsyncStorage**
+- Protected routes
+- API security via rate limiting and middleware
+- **Role-based access control (RBAC)** to restrict admin-only features
+<br />
 
 ### ✅ Regular User 
-- Register and log in with secure JWT-based authentication
-- Store passwords securely using bcrypt hashing
 - Add, edit, and delete income/expense transactions
 - View monthly transaction history and summary with charts
 - Filter transactions by type, month, and category
-- Persistent login using AsyncStorage
 
 ### 👥 Admin User
 - View a list of all users
 - Delete users
 - Access and view data of regular users
-- Enforced role-based access control (RBAC)
 
 ## 🛠️ Setup
 ### 🗄️ Backend
