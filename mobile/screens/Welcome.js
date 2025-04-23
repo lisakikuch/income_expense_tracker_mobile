@@ -10,7 +10,7 @@ const Welcome = ({ navigation }) => {
       <Ionicons name="stats-chart-outline" size={100} color="#fff" style={styles.logo} />
 
       {/* Title and Subtitle */}
-      <Text style={styles.title}>Finance Tracker</Text>
+      <Text style={styles.title}>Clarity Financial</Text>
       <Text style={styles.subtitle}>
         Track your finances effortlessly and start saving today!
       </Text>
