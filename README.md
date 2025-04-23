@@ -2,7 +2,7 @@
 A full-stack mobile finance tracking application that helps users securely manage their income and expenses, with access to monthly transaction history and financial summaries through an intuitive and user-friendly interface.
 
 ## 🚀 Live App
-Available here!:<br> 🔗 **Expo**: [https://expo.dev/accounts/lisa55555/projects/mobile/updates/512aeac9-9d30-4e91-b51e-9c8cbe502a44](https://expo.dev/accounts/lisa55555/projects/mobile/updates/512aeac9-9d30-4e91-b51e-9c8cbe502a44)
+is available on [**Expo**](https://expo.dev/accounts/lisa55555/projects/mobile/builds/b610ea5a-00d6-409e-8170-16b20d70237c)
 
 ## 🧰 Tech Stack
 ### 📱 Frontend (Mobile) <br />
