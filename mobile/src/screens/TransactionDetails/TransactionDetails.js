@@ -19,6 +19,13 @@ import { Dropdown } from 'react-native-element-dropdown';
 // Styling
 import styles from "./TransactionDetails.styles";
 
+// Constants for Dropdown
+import {
+  TRANSACTION_TYPES,
+  INCOME_CATEGORIES,
+  EXPENSE_CATEGORIES
+} from '../../constants/categories';
+
 const TransactionDetails = ({ route, navigation }) => {
 
   const { transaction } = route.params;
@@ -41,45 +48,18 @@ const TransactionDetails = ({ route, navigation }) => {
   // Extract the transaction ID from the user object
   const transactionId = transaction?._id;
 
-  // For dropdown menu items
-  const TRANSACTIONTYPES = ["Expense", "Income"];
-  const formattedTransactionTypes = TRANSACTIONTYPES.map((item) => ({
+  // Formatted dropdown menu
+  const formattedTransactionTypes = TRANSACTION_TYPES.map((item) => ({
     label: item,
     value: item
   }));
 
-  const INCOMECATEGORIES = [
-    "Salary",
-    "Bonus",
-    "Freelance",
-    "Investment Returns",
-    "Rental Income",
-    "Business Income",
-    "Gift",
-    "Refunds/Reimbursements",
-    "Other Income"];
-  const formattedIncomeCategories = INCOMECATEGORIES.map((item) => ({
+  const formattedIncomeCategories = INCOME_CATEGORIES.map((item) => ({
     label: item,
     value: item
   }));
 
-  const EXPENSECATEGORIES = [
-    "Housing",
-    "Utilities",
-    "Groceries",
-    "Dining Out",
-    "Transportation",
-    "Entertainment",
-    "Healthcare",
-    "Education",
-    "Personal Care",
-    "Shopping", "Travel",
-    "Debt Payments",
-    "Savings & Investments",
-    "Donations",
-    "Other Expenses"
-  ];
-  const formattedExpenseCategories = EXPENSECATEGORIES.map((item) => ({
+  const formattedExpenseCategories = EXPENSE_CATEGORIES.map((item) => ({
     label: item,
     value: item
   }));

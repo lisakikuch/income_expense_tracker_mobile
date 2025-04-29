@@ -10,7 +10,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAuth } from '../contexts/AuthContext';
 
 // Styling
-import globalStyles from '../shared/GlobalStyles';
+import globalStyles from '../styles/GlobalStyles';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 
