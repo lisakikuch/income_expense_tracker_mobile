@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
+
+// Styling
+import styles from './Login.styles';
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -66,59 +69,5 @@ const Login = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    justifyContent: "center",
-    padding: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#F0F0F0",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 15,
-  },
-  input: {
-    flex: 1,
-    marginLeft: 10,
-  },
-  button: {
-    backgroundColor: "#6E72F1",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 20,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  footerText: {
-    marginTop: 15,
-    textAlign: "center",
-    color: "#666",
-  },
-  linkText: {
-    color: "#6E72F1",
-    fontWeight: "bold",
-  },
-});
 
 export default Login;

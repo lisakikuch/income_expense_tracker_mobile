@@ -1,11 +1,23 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform, Keyboard, TouchableWithoutFeedback } from "react-native";
-import { useAuth } from "../contexts/AuthContext";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from "react-native";
+import { useAuth } from "../../contexts/AuthContext";
 import { API_URL } from '@env';
 
 import axios from "axios";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Dropdown } from 'react-native-element-dropdown';
+
+// Styling
+import styles from "./TransactionDetails.styles";
 
 const TransactionDetails = ({ route, navigation }) => {
 
@@ -152,160 +164,108 @@ const TransactionDetails = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Transaction Details</Text>
-      <View style={styles.card}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Transaction Details</Text>
+        <View style={styles.card}>
 
-        <View>
-          <Text style={styles.label}>Date</Text>
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowDatePicker(true)}
-          >
-            <Text>{transactionDate.toLocaleDateString()}</Text>
-          </TouchableOpacity>
+          <View>
+            <Text style={styles.label}>Date</Text>
+            <TouchableOpacity
+              style={styles.input}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text>{transactionDate.toLocaleDateString()}</Text>
+            </TouchableOpacity>
 
-          {showDatePicker && (
-            <DateTimePicker
-              value={transactionDate}
-              mode="date"
-              display={Platform.OS === "ios" ? "default" : "default"}
-              onChange={(event, selectedDate) => {
-                setShowDatePicker(false);
-                if (selectedDate) setTransactionDate(selectedDate);
+            {showDatePicker && (
+              <DateTimePicker
+                value={transactionDate}
+                mode="date"
+                display={Platform.OS === "ios" ? "default" : "default"}
+                onChange={(event, selectedDate) => {
+                  setShowDatePicker(false);
+                  if (selectedDate) setTransactionDate(selectedDate);
+                }}
+              />
+            )}
+          </View>
+
+          <View>
+            <Text style={styles.label}>Type</Text>
+            <Dropdown
+              style={styles.input}
+              data={formattedTransactionTypes}
+              labelField="label"
+              valueField="value"
+              value={transactionType}
+              onChange={(item) => {
+                setTransactionType(item.value);
+                setTransactionCategory(null);
               }}
+              placeholder="Select Type"
             />
-          )}
-        </View>
+          </View>
 
-        <View>
-          <Text style={styles.label}>Type</Text>
+          <Text style={styles.label}>Category</Text>
           <Dropdown
             style={styles.input}
-            data={formattedTransactionTypes}
+            data={transactionType === "Income" ? formattedIncomeCategories : formattedExpenseCategories}
             labelField="label"
             valueField="value"
-            value={transactionType}
-            onChange={(item) => {
-              setTransactionType(item.value);
-              setTransactionCategory(null);
-            }}
-            placeholder="Select Type"
+            value={transactionCategory}
+            onChange={(item) => setTransactionCategory(item.value)}
           />
+
+          <View>
+            <Text style={styles.label}>Amount</Text>
+            <TextInput
+              style={styles.input}
+              value={transactionAmount}
+              onChangeText={setTransactionAmount}
+              keyboardType="decimal-pad"
+            />
+          </View>
+
+          <View>
+            <Text style={styles.label}>Note</Text>
+            <TextInput
+              style={styles.input}
+              value={transactionNote}
+              onChangeText={setTransactionNote}
+            />
+          </View>
+
+          <TouchableOpacity
+            style={styles.updateButton}
+            onPress={handleUpdate}>
+            <Text style={styles.buttonText}>Update</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => Alert.alert(
+              "Delete Transaction",
+              "Are you sure you want to delete this transaction?",
+              [
+                {
+                  text: "Cancel",
+                  style: "cancel",
+                },
+                {
+                  text: "Delete",
+                  onPress: () => handleDelete(),
+                  style: "destructive",
+                },
+              ]
+            )}
+          >
+            <Text style={styles.buttonText}>Delete</Text>
+          </TouchableOpacity>
         </View>
-
-        <Text style={styles.label}>Category</Text>
-        <Dropdown
-          style={styles.input}
-          data={transactionType === "Income" ? formattedIncomeCategories : formattedExpenseCategories}
-          labelField="label"
-          valueField="value"
-          value={transactionCategory}
-          onChange={(item) => setTransactionCategory(item.value)}
-        />
-
-        <View>
-          <Text style={styles.label}>Amount</Text>
-          <TextInput
-            style={styles.input}
-            value={transactionAmount}
-            onChangeText={setTransactionAmount}
-            keyboardType="decimal-pad"
-          />
-        </View>
-
-        <View>
-          <Text style={styles.label}>Note</Text>
-          <TextInput
-            style={styles.input}
-            value={transactionNote}
-            onChangeText={setTransactionNote}
-          />
-        </View>
-
-        <TouchableOpacity
-          style={styles.updateButton}
-          onPress={handleUpdate}>
-          <Text style={styles.buttonText}>Update</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => Alert.alert(
-            "Delete Transaction",
-            "Are you sure you want to delete this transaction?",
-            [
-              {
-                text: "Cancel",
-                style: "cancel",
-              },
-              {
-                text: "Delete",
-                onPress: () => handleDelete(),
-                style: "destructive",
-              },
-            ]
-          )}
-        >
-          <Text style={styles.buttonText}>Delete</Text>
-        </TouchableOpacity>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#F8F9FA",
-  },
-  card: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 5,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  label: {
-    fontWeight: "bold",
-  },
-  input: {
-    backgroundColor: "#E9ECEF",
-    padding: 12,
-    borderRadius: 5,
-    marginTop: 5,
-    marginBottom: 10,
-  },
-  updateButton: {
-    backgroundColor: "#6a5acd",
-    padding: 12,
-    borderRadius: 5,
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  deleteButton: {
-    backgroundColor: "#dc3545",
-    padding: 12,
-    borderRadius: 5,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-});
 
 export default TransactionDetails;

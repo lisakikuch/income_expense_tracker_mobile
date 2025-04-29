@@ -15,14 +15,14 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 
 // Screens
-import TransactionList from '../screens/TransactionList';
-import ReportScreen from '../screens/ReportScreen';
-import Welcome from '../screens/Welcome';
-import Login from '../screens/Login';
-import SignUp from '../screens/SignUp';
-import AddTransaction from '../screens/AddTransaction';
-import TransactionDetails from '../screens/TransactionDetails';
-import UserList from '../screens/UserList';
+import Welcome from '../screens/Welcome/Welcome';
+import SignUp from '../screens/SignUp/SignUp';
+import Login from '../screens/Login/Login';
+import TransactionList from '../screens/TransactionList/TransactionList';
+import TransactionDetails from '../screens/TransactionDetails/TransactionDetails';
+import ReportScreen from '../screens/Report/ReportScreen';
+import AddTransaction from '../screens/AddTransaction/AddTransaction';
+import UserList from '../screens/UserList/UserList';
 
 // Create Stacks and Tab
 const Stack = createStackNavigator();

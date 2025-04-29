@@ -4,18 +4,22 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
   Platform,
-  Alert
+  Alert,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { API_URL } from '@env';
 
 import axios from "axios";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Dropdown } from 'react-native-element-dropdown';
+
+// Styling
+import styles from "./AddTransaction.styles";
 
 const AddTransaction = () => {
 
@@ -133,134 +137,86 @@ const AddTransaction = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
 
-      <View style={styles.card}>
-        <Text style={styles.subHeader}>Transaction Details</Text>
+        <View style={styles.card}>
+          <Text style={styles.subHeader}>Transaction Details</Text>
 
-        <Text style={styles.label}>Date</Text>
-        <TouchableOpacity
-          style={styles.input}
-          onPress={() => setShowDatePicker(true)}
-        >
-          <Text>{transactionDate.toLocaleDateString()}</Text>
-        </TouchableOpacity>
-        {showDatePicker && (
-          <DateTimePicker
-            value={transactionDate}
-            mode="date"
-            display={Platform.OS === "ios" ? "default" : "calendar"}
-            onChange={(event, selectedDate) => {
-              setShowDatePicker(false);
-              if (selectedDate) setTransactionDate(selectedDate);
-            }}
-          />
-        )}
-
-        <Text style={styles.label}>Type</Text>
-        <Dropdown
-          style={styles.input}
-          data={formattedTransactionTypes}
-          labelField="label"
-          valueField="value"
-          value={transactionType}
-          onChange={(item) => {
-            setTransactionType(item.value);
-            setTransactionCategory(null);
-          }}
-          placeholder="Select Type"
-        />
-        <Text style={styles.label}>Category</Text>
-        <Dropdown
-          style={styles.input}
-          data={transactionType === "Income" ? formattedIncomeCategories : formattedExpenseCategories}
-          labelField="label"
-          valueField="value"
-          value={transactionCategory}
-          onChange={(item) => setTransactionCategory(item.value)}
-          placeholder="Select Category"
-          disabled={!transactionType}
-        />
-        
-        <Text style={styles.label}>Amount</Text>
-        <TextInput
-          style={styles.input}
-          keyboardType="decimal-pad"
-          value={transactionAmount}
-          onChangeText={setTransactionAmount}
-          placeholder="Enter Amount"
-        />
-
-        <Text style={styles.label}>Note (Optional)</Text>
-        <TextInput
-          style={styles.input}
-          value={transactionNote}
-          onChangeText={setTransactionNote}
-          placeholder="Add a Note"
-        />
-
-        {isLoading ? (
-          <ActivityIndicator />
-        ) : (
+          <Text style={styles.label}>Date</Text>
           <TouchableOpacity
-            onPress={handleAddTransaction}
-            style={styles.button}>
-            <Text style={styles.buttonText}>Add Transaction</Text>
-          </TouchableOpacity>)
-        }
+            style={styles.input}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text>{transactionDate.toLocaleDateString()}</Text>
+          </TouchableOpacity>
+          {showDatePicker && (
+            <DateTimePicker
+              value={transactionDate}
+              mode="date"
+              display={Platform.OS === "ios" ? "default" : "calendar"}
+              onChange={(event, selectedDate) => {
+                setShowDatePicker(false);
+                if (selectedDate) setTransactionDate(selectedDate);
+              }}
+            />
+          )}
+
+          <Text style={styles.label}>Type</Text>
+          <Dropdown
+            style={styles.input}
+            data={formattedTransactionTypes}
+            labelField="label"
+            valueField="value"
+            value={transactionType}
+            onChange={(item) => {
+              setTransactionType(item.value);
+              setTransactionCategory(null);
+            }}
+            placeholder="Select Type"
+          />
+          <Text style={styles.label}>Category</Text>
+          <Dropdown
+            style={styles.input}
+            data={transactionType === "Income" ? formattedIncomeCategories : formattedExpenseCategories}
+            labelField="label"
+            valueField="value"
+            value={transactionCategory}
+            onChange={(item) => setTransactionCategory(item.value)}
+            placeholder="Select Category"
+            disabled={!transactionType}
+          />
+
+          <Text style={styles.label}>Amount</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="decimal-pad"
+            value={transactionAmount}
+            onChangeText={setTransactionAmount}
+            placeholder="Enter Amount"
+          />
+
+          <Text style={styles.label}>Note (Optional)</Text>
+          <TextInput
+            style={styles.input}
+            value={transactionNote}
+            onChangeText={setTransactionNote}
+            placeholder="Add a Note"
+          />
+
+          {isLoading ? (
+            <ActivityIndicator />
+          ) : (
+            <TouchableOpacity
+              onPress={handleAddTransaction}
+              style={styles.button}>
+              <Text style={styles.buttonText}>Add Transaction</Text>
+            </TouchableOpacity>)
+          }
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#F8F9FA",
-  },
-  header: {
-    fontSize: 22,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  card: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 5,
-  },
-  subHeader: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  label: {
-    fontWeight: "bold",
-    marginTop: 10,
-  },
-  input: {
-    backgroundColor: "#E9ECEF",
-    padding: 12,
-    borderRadius: 5,
-    marginTop: 5,
-  },
-  button: {
-    backgroundColor: "#6a5acd",
-    padding: 15,
-    borderRadius: 5,
-    alignItems: "center",
-    marginTop: 20,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-
-});
 
 export default AddTransaction;
