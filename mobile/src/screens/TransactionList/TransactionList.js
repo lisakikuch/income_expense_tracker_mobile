@@ -1,12 +1,30 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, FlatList, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator
+} from "react-native";
+
 import { useAuth } from "../../contexts/AuthContext";
 import { API_URL } from '@env';
 
+// Custom components
+import MonthPickerModal from "../../components/MonthPickerModal";
+import TransactionTypeToggle from "../../components/TransactionTypeToggle";
+
+// npm packages
 import axios from "axios";
 import { Dropdown } from 'react-native-element-dropdown';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
+
+// Constants for Dropdown
+import {
+  INCOME_CATEGORIES,
+  EXPENSE_CATEGORIES
+} from "../../constants/categories";
 
 // Styling
 import styles from "./TransactionList.styles";
@@ -23,7 +41,7 @@ const TransactionList = ({ navigation, route }) => {
   const userId = route.params?.selectedUserId || user?._id;
   console.log("userId: ", userId);
 
-  // Calendar
+  // Get a current month
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
@@ -35,53 +53,30 @@ const TransactionList = ({ navigation, route }) => {
   const [transactionMonth, setTransactionMonth] = useState(defaultMonth);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Month Selector
   const [selectedMonth, setSelectedMonth] = useState(defaultMonth);
   const [modalVisible, setModalVisible] = useState(false);
-
-  const months = Array.from({ length: 12 }, (_, i) => `${currentYear}-${i + 1}`);
 
   useEffect(() => {
     setTransactionMonth(selectedMonth);
   }, [selectedMonth]);
 
   // Dropdown menu
-  const INCOMECATEGORIES = [
-    "All",
-    "Salary",
-    "Bonus",
-    "Freelance",
-    "Investment Returns",
-    "Rental Income",
-    "Business Income",
-    "Gift",
-    "Refunds/Reimbursements",
-    "Other Income"];
-  const formattedIncomeCategories = INCOMECATEGORIES.map((item) => ({
-    label: item,
-    value: item === "All" ? "" : item
-  }));
-
-  const EXPENSECATEGORIES = [
-    "All",
-    "Housing",
-    "Utilities",
-    "Groceries",
-    "Dining Out",
-    "Transportation",
-    "Entertainment",
-    "Healthcare",
-    "Education",
-    "Personal Care",
-    "Shopping", "Travel",
-    "Debt Payments",
-    "Savings & Investments",
-    "Donations",
-    "Other Expenses"
+  const formattedIncomeCategories = [
+    { label: "All", value: "" },
+    ...INCOME_CATEGORIES.map((item) => ({
+      label: item,
+      value: item
+    })),
   ];
-  const formattedExpenseCategories = EXPENSECATEGORIES.map((item) => ({
-    label: item,
-    value: item === "All" ? "" : item
-  }));
+
+  const formattedExpenseCategories = [
+    { label: "All", value: "" },
+    ...EXPENSE_CATEGORIES.map((item) => ({
+      label: item,
+      value: item
+    })),
+  ];
 
   // Re-fetch when returning from another screen to ensure data stay in sync with the backend
   // or dependencies change
@@ -121,9 +116,7 @@ const TransactionList = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-
       <View style={styles.headerContainer}>
-
         <Text style={styles.subHeader}>{transactionType}</Text>
 
         {/* Month Selector */}
@@ -135,36 +128,15 @@ const TransactionList = ({ navigation, route }) => {
           <Text style={styles.monthText}>{selectedMonth}</Text>
         </TouchableOpacity>
 
-        {/* Month Selector Modal */}
-        <Modal visible={modalVisible} animationType="slide" transparent={true}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Select a Month</Text>
-              <FlatList
-                data={months}
-                keyExtractor={(item) => item}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={styles.monthOption}
-                    onPress={() => {
-                      setSelectedMonth(item);
-                      setModalVisible(false);
-                    }}
-                  >
-                    <Text style={styles.monthOptionText}>{item}</Text>
-                  </TouchableOpacity>
-                )}
-              />
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                style={styles.cancelButton}
-              >
-                <Text style={styles.cancelText}>Close</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-
+        <MonthPickerModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onSelect={(month) => {
+            setSelectedMonth(month);
+            setModalVisible(false);
+          }}
+          selected={selectedMonth}
+        />
       </View>
 
       {isLoading ? (
@@ -242,46 +214,16 @@ const TransactionList = ({ navigation, route }) => {
         </View>
       )
       }
-      <View style={styles.toggleContainer}>
-        <TouchableOpacity
-          style={[
-            styles.toggleButton,
-            transactionType === "Expense" && styles.activeButton,
-          ]}
-          onPress={() => {
-            setTransactionType("Expense")
-            setTransactionCategory("")
-          }}
-        >
-          <Text
-            style={[
-              styles.toggleText,
-              transactionType === "Expense" && styles.activeText,
-            ]}
-          >
-            Expense
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.toggleButton,
-            transactionType === "Income" && styles.activeButton,
-          ]}
-          onPress={() => {
-            setTransactionType("Income")
-            setTransactionCategory("")
-          }}
-        >
-          <Text
-            style={[
-              styles.toggleText,
-              transactionType === "Income" && styles.activeText,
-            ]}
-          >
-            Income
-          </Text>
-        </TouchableOpacity>
-      </View>
+
+      {/* Income/Expense Toggle Button */}
+      <TransactionTypeToggle
+        selectedType={transactionType}
+        onSelect={(type) => {
+          setTransactionType(type);
+          setTransactionCategory("");
+        }}
+      />
+
     </View>
   );
 };

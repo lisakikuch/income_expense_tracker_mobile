@@ -74,11 +74,11 @@ const MainTabs = () => {
         ),
         headerStyle: globalStyles.headerContainer,
         headerTitleStyle: globalStyles.headerTitle,
-        tabBarActiveTintColor: 'slateblue',
+        tabBarActiveTintColor: 'darkblue',
         tabBarInactiveTintColor: 'gray',
         tabBarIcon: ({ focused }) => {
             let iconName;
-            let color = focused ? 'slateblue' : 'gray';
+            let color = focused ? 'darkblue' : 'gray';
 
             if (route.name === 'TransactionList') {
                 iconName = 'list-alt';
