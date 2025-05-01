@@ -32,8 +32,9 @@ connectDB(MONGO_URI)
         process.exit(1);
     });
 
+// Allow other devices on the same network accessible to the server
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: [/^http:\/\/192\.168\.\d+\.\d+:\d+$/, 'http://localhost:3000'],
     credentials: true
 }));
 
@@ -50,6 +51,7 @@ app.get('/', (req, res) => {
     res.send('API is running! Welcome to the Expense/Income Tracker.');
 });
 
-app.listen(PORT, () => {
+// Allow other devices on the same network accessible to the server by 0.0.0.0
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
