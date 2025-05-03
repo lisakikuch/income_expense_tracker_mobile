@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -9,15 +9,18 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
+
+// Contexts
 import { useAuth } from "../../contexts/AuthContext";
+import { TransactionContext } from "../../contexts/TransactionContext";
+
+// API
 import { API_URL } from '@env';
 
+// npm packages
 import axios from "axios";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Dropdown } from 'react-native-element-dropdown';
-
-// Styling
-import styles from "./TransactionDetails.styles";
 
 // Constants for Dropdown
 import {
@@ -26,11 +29,18 @@ import {
   EXPENSE_CATEGORIES
 } from '../../constants/categories';
 
+// Styling
+import styles from "./TransactionDetails.styles";
+
 const TransactionDetails = ({ route, navigation }) => {
+
+  // Global states
+  const { dispatch } = useContext(TransactionContext);
 
   const { transaction } = route.params;
   console.log("Transaction Details - Route Params: ", transaction);
 
+  // Local states
   const [transactionDate, setTransactionDate] = useState(new Date(transaction.date));
   const [transactionType, setTransactionType] = useState(transaction.type);
   const [transactionCategory, setTransactionCategory] = useState(transaction.category);
@@ -48,12 +58,13 @@ const TransactionDetails = ({ route, navigation }) => {
   // Extract the transaction ID from the user object
   const transactionId = transaction?._id;
 
-  // Formatted dropdown menu
+  // Formatted toggle button items
   const formattedTransactionTypes = TRANSACTION_TYPES.map((item) => ({
     label: item,
     value: item
   }));
 
+  // Formatted dropdown items
   const formattedIncomeCategories = INCOME_CATEGORIES.map((item) => ({
     label: item,
     value: item
@@ -99,7 +110,13 @@ const TransactionDetails = ({ route, navigation }) => {
       );
 
       if (res.status === 200) {
+        // Remove this line once the global states have been fully implemented
         route.params?.onUpdate?.(res.data);
+
+        // Dispatch the update to the global states
+        dispatch({ type: "UPDATE_TRANSACTION", payload: res.data });
+        console.log("After UPDATE_TRANSACTION: ", res.data);
+
         Alert.alert("Success", "Transaction updated successfully!");
         navigation.goBack();
       }
@@ -129,7 +146,13 @@ const TransactionDetails = ({ route, navigation }) => {
       );
 
       if (res.status === 200) {
+        // Remove this line once the global states have been fully implemented
         route.params?.onUpdate?.({ deletedId: transactionId });
+
+        // Dispatch the deletion to the global states
+        dispatch({ type: "DELETE_TRANSACTION", payload: transactionId });
+        console.log("Deleted ID with DELETE_TRANSACTION: ", transactionId);
+
         Alert.alert("Success", "Transaction deleted successfully!");
         navigation.goBack();
       }

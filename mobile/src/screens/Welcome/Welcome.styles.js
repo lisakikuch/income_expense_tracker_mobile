@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#6E72F1',
+      backgroundColor: '#4A90E2',
       justifyContent: 'center',
       alignItems: 'center',
       padding: 20,
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
       width: "100%"
     },
     loginButtonText: {
-      color: '#6E72F1',
+      color: '#4A90E2',
       fontSize: 18,
       fontWeight: 'bold',
       textAlign: "center"

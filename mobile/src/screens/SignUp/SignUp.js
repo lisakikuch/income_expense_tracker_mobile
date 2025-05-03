@@ -79,8 +79,8 @@ const SignUp = ({ navigation }) => {
           width: 24,
           height: 24,
           borderWidth: 2,
-          borderColor: "#6E72F1",
-          backgroundColor: value ? "#6E72F1" : "white",
+          borderColor: "#4A90E2",
+          backgroundColor: value ? "#4A90E2" : "white",
           marginRight: 8,
         }}
       />

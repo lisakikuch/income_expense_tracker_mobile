@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useContext, } from "react";
 import {
   View,
   Text,
@@ -7,8 +7,9 @@ import {
   ActivityIndicator
 } from "react-native";
 
+// Contexts
 import { useAuth } from "../../contexts/AuthContext";
-import { API_URL } from '@env';
+import { TransactionContext } from "../../contexts/TransactionContext";
 
 // Custom components
 import MonthPickerModal from "../../components/MonthPickerModal";
@@ -17,10 +18,9 @@ import TransactionTypeToggle from "../../components/TransactionTypeToggle";
 // npm packages
 import axios from "axios";
 import { Dropdown } from 'react-native-element-dropdown';
-import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
 
-// Constants for Dropdown
+// Constants for Dropdown menu items
 import {
   INCOME_CATEGORIES,
   EXPENSE_CATEGORIES
@@ -41,27 +41,27 @@ const TransactionList = ({ navigation, route }) => {
   const userId = route.params?.selectedUserId || user?._id;
   console.log("userId: ", userId);
 
-  // Get a current month
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth() + 1;
-  const defaultMonth = `${currentYear}-${currentMonth}`;
+  // Global states
+  const { state, dispatch } = useContext(TransactionContext);
+  const {
+    transactions,
+    transactionType,
+    transactionMonth,
+    isLoading
+  } = state;
 
-  const [transactions, setTransactions] = useState([]);
-  const [transactionType, setTransactionType] = useState("Expense");
+  // Local states
   const [transactionCategory, setTransactionCategory] = useState("");
-  const [transactionMonth, setTransactionMonth] = useState(defaultMonth);
-  const [isLoading, setIsLoading] = useState(false);
+
+  // Filter transaction data by category
+  const filteredTransactions = state.transactions.filter(transaction =>
+    transactionCategory ? transaction.category === transactionCategory : true
+  );
 
   // Month Selector
-  const [selectedMonth, setSelectedMonth] = useState(defaultMonth);
   const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    setTransactionMonth(selectedMonth);
-  }, [selectedMonth]);
-
-  // Dropdown menu
+  // Category dropdown menu
   const formattedIncomeCategories = [
     { label: "All", value: "" },
     ...INCOME_CATEGORIES.map((item) => ({
@@ -78,42 +78,6 @@ const TransactionList = ({ navigation, route }) => {
     })),
   ];
 
-  // Re-fetch when returning from another screen to ensure data stay in sync with the backend
-  // or dependencies change
-  useFocusEffect(
-    useCallback(() => {
-      const fetchTransactionData = async () => {
-        try {
-          setIsLoading(true);
-
-          // Send a GET request to get transaction data associated with the user by type + month wtih JWT
-          const res = await axios.get(`${API_URL}/transactions`, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            },
-            params: {
-              type: transactionType,
-              month: transactionMonth,
-              category: transactionCategory,
-              userID: userId,
-            }
-          });
-
-          // Save the fetched transaction data
-          setTransactions(res.data);
-          console.log(res.data);
-        } catch (err) {
-          console.error("Error while fetching transaction data: ", err);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      if (userId && token) {
-        fetchTransactionData();
-      }
-    }, [transactionType, transactionMonth, transactionCategory, userId, token])
-  );
-
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -125,20 +89,21 @@ const TransactionList = ({ navigation, route }) => {
           style={styles.calendarButton}
         >
           <Ionicons name="calendar-outline" size={24} color="black" />
-          <Text style={styles.monthText}>{selectedMonth}</Text>
+          <Text style={styles.monthText}>{transactionMonth}</Text>
         </TouchableOpacity>
 
         <MonthPickerModal
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
           onSelect={(month) => {
-            setSelectedMonth(month);
+            dispatch({ type: "SET_TRANSACTION_MONTH", payload: month });
             setModalVisible(false);
           }}
-          selected={selectedMonth}
+          selected={transactionMonth}
         />
       </View>
 
+      {/* Category dropdown */}
       {isLoading ? (
         <ActivityIndicator />
       ) : transactions.length === 0 ? (
@@ -164,9 +129,11 @@ const TransactionList = ({ navigation, route }) => {
             value={transactionCategory}
             onChange={(item) => setTransactionCategory(item.value)}
           />
+
+          {/* Transaction list */}
           <FlatList
             style={styles.transactionList}
-            data={transactions}
+            data={filteredTransactions}
             keyExtractor={(item) => item._id}
             contentContainerStyle={{ paddingBottom: 50 }}
             renderItem={({ item }) => (
@@ -187,20 +154,6 @@ const TransactionList = ({ navigation, route }) => {
                       onPress={() => {
                         navigation.navigate("TransactionDetails", {
                           transaction: item,
-                          // Update UI as soon as the value in TransactionDetails is updated
-                          onUpdate: (payload) => {
-                            if (payload.deletedId) {
-                              setTransactions((prev) =>
-                                prev.filter((txn) => txn._id !== payload.deletedId)
-                              );
-                            } else {
-                              setTransactions((prev) =>
-                                prev.map((txn) =>
-                                  txn._id === payload._id ? payload : txn
-                                )
-                              );
-                            }
-                          },
                         });
                       }}
                     >
@@ -219,7 +172,7 @@ const TransactionList = ({ navigation, route }) => {
       <TransactionTypeToggle
         selectedType={transactionType}
         onSelect={(type) => {
-          setTransactionType(type);
+          dispatch({ type: "SET_TRANSACTION_TYPE", payload: type });
           setTransactionCategory("");
         }}
       />

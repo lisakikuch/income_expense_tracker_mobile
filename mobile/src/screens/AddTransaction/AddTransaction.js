@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -11,15 +11,17 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 
+// Contexts
 import { useAuth } from "../../contexts/AuthContext";
+import { TransactionContext } from "../../contexts/TransactionContext";
+
+// API
 import { API_URL } from '@env';
 
+// npm packages
 import axios from "axios";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Dropdown } from 'react-native-element-dropdown';
-
-// Styling
-import styles from "./AddTransaction.styles";
 
 // Constants for Dropdown
 import {
@@ -28,7 +30,12 @@ import {
   EXPENSE_CATEGORIES,
 } from "../../constants/categories";
 
+// Styling
+import styles from "./AddTransaction.styles";
+
 const AddTransaction = () => {
+
+  const { dispatch } = useContext(TransactionContext);
 
   // Logged in user info + token
   const { user, token } = useAuth();
@@ -49,12 +56,13 @@ const AddTransaction = () => {
   // Display activity indicator while loading
   const [isLoading, setIsLoading] = useState(false);
 
-  // Formatted dropdown menu 
+  // Formatted toggle button items
   const formattedTransactionTypes = TRANSACTION_TYPES.map((item) => ({
     label: item,
     value: item
   }));
 
+  // Formatted dropdown items 
   const formattedIncomeCategories = INCOME_CATEGORIES.map((item) => ({
     label: item,
     value: item
@@ -100,6 +108,11 @@ const AddTransaction = () => {
       if (res.status === 201) {
         Alert.alert("Success", "Transaction added successfully!");
 
+        // Dispatch to global state
+        dispatch({ type: "ADD_TRANSACTION", payload: res.data });
+        console.log("After ADD_TRANSACTION:", res.data);
+
+        // Reset form
         setTransactionType(null);
         setTransactionAmount("");
         setTransactionCategory(null);
