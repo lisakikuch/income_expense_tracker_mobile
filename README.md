@@ -8,7 +8,10 @@ is available on [**Expo**](https://expo.dev/accounts/lisa55555/projects/mobile/b
 ### 📱 Frontend (Mobile) <br />
 **Framework**: React Native with Expo <br />
 **Navigation**: React Navigation <br />
-**State Management**: useContext + SecureStore + Expo SecureStore <br />
+**State Management**: 
+- User state: useContext + Expo SecureStore
+- Transaction state: useContext + useReducer <br />
+
 **API Requests**: Axios <br />
 **UI Components**:
 - react-native-paper (Material Design components and icons)

@@ -8,10 +8,17 @@ import {
   ActivityIndicator,
   Modal,
 } from 'react-native';
+
+// npm packages
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { API_URL } from '@env';
 import axios from 'axios';
+
+// Context
+import { useAuth } from '../../contexts/AuthContext';
+
+// API
+import { API_URL } from '@env';
 
 // Styling
 import styles from './SignUp.styles';
@@ -23,6 +30,9 @@ const SignUp = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+
+  // Login function
+  const { login } = useAuth();
 
   const handleSignUp = async () => {
     // Input Validation
@@ -58,7 +68,7 @@ const SignUp = ({ navigation }) => {
 
       if (res.status === 201) {
         Alert.alert("Success", "Account created successfully!");
-        navigation.navigate("Login");
+        await login(email, password);
       }
     } catch (err) {
       console.error("Sign Up Error: ", err.response?.data || err.message);

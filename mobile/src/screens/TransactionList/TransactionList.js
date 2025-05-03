@@ -50,14 +50,12 @@ const TransactionList = ({ navigation, route }) => {
 
   // Local states
   const [transactionCategory, setTransactionCategory] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   // Filter transaction data by category
   const filteredTransactions = state.transactions.filter(transaction =>
     transactionCategory ? transaction.category === transactionCategory : true
   );
-
-  // Month Selector
-  const [modalVisible, setModalVisible] = useState(false);
 
   // Category dropdown menu
   const formattedIncomeCategories = [
