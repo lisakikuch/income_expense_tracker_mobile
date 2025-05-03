@@ -1,4 +1,4 @@
-import React, { useState, useContext, } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -16,7 +16,6 @@ import MonthPickerModal from "../../components/MonthPickerModal";
 import TransactionTypeToggle from "../../components/TransactionTypeToggle";
 
 // npm packages
-import axios from "axios";
 import { Dropdown } from 'react-native-element-dropdown';
 import { Ionicons } from "@expo/vector-icons";
 
@@ -32,9 +31,8 @@ import styles from "./TransactionList.styles";
 const TransactionList = ({ navigation, route }) => {
 
   // Logged in user's info + jwt
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   console.log("User: ", user);
-  console.log("Token: ", token);
 
   // If there's a selectedUserId passed through navigation, use that. 
   // If not, use the currently logged-in user’s ID.
@@ -77,6 +75,11 @@ const TransactionList = ({ navigation, route }) => {
       value: item
     })),
   ];
+
+  // Reset category when transactionType changes
+  useEffect(() => {
+    setTransactionCategory("");
+  }, [transactionType]);  
 
   return (
     <View style={styles.container}>

@@ -11,7 +11,10 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: 'center',
         paddingHorizontal: 10,
-        // marginVertical: 10,
+      },
+      subHeader: {
+        fontSize: 18,
+        fontWeight: "bold",
       },
       calendarButton: {
         flexDirection: "row",
@@ -21,17 +24,6 @@ const styles = StyleSheet.create({
       monthText: {
         fontSize: 16,
         marginLeft: 5,
-      },
-      refreshButton: {
-        alignSelf: "flex-start",
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 10,
-      },
-      refreshText: {
-        marginLeft: 5,
-        fontSize: 14,
-        color: "#4A90E2",
       },
       pickerContainer: {
         marginBottom: 10,

@@ -5,11 +5,13 @@ import { useAuth } from './AuthContext';
 
 export const TransactionContext = createContext();
 
+// Get a current month
 const now = new Date();
 const year = now.getFullYear();
 const month = now.getMonth() + 1;
 const defaultMonth = `${year}-${month}`;
 
+// Set initial states
 const initialState = {
     transactions: [],
     transactionType: "Expense",
@@ -18,6 +20,7 @@ const initialState = {
     error: null,
 };
 
+// Reducer
 function transactionReducer(state, action) {
     switch (action.type) {
         case "SET_TRANSACTION_TYPE":
@@ -59,8 +62,11 @@ function transactionReducer(state, action) {
 
 export const TransactionProvider = ({ children }) => {
     const [state, dispatch] = useReducer(transactionReducer, initialState);
+    
+    // User data
     const { token, user } = useAuth();
 
+    // Fetch transaction data
     const fetchTransactions = async () => {
 
         dispatch({ type: "SET_LOADING", payload: true });
