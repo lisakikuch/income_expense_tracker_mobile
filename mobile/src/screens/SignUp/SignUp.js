@@ -68,6 +68,7 @@ const SignUp = ({ navigation }) => {
 
       if (res.status === 201) {
         Alert.alert("Success", "Account created successfully!");
+        // Auto login
         await login(email, password);
       }
     } catch (err) {

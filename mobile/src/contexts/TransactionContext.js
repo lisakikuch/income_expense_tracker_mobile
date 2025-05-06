@@ -83,7 +83,7 @@ export const TransactionProvider = ({ children }) => {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            dispatch({ type: "SET_TRANSACTIONS", payload: res.data });
+            dispatch({ type: "SET_TRANSACTIONS", payload: res.data.transactions });
 
         } catch (error) {
             dispatch({ type: "SET_ERROR", payload: error.message });

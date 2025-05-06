@@ -107,7 +107,7 @@ const TransactionList = ({ navigation, route }) => {
       {/* Category dropdown */}
       {isLoading ? (
         <ActivityIndicator />
-      ) : transactions.length === 0 ? (
+      ) : filteredTransactions.length === 0 ? (
         <View>
           <Dropdown
             style={styles.input}

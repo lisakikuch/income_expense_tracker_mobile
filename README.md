@@ -40,7 +40,7 @@ is available on [**Expo**](https://expo.dev/accounts/lisa55555/projects/mobile/b
 ## ✨ Features
 - Register and log in with secure **JWT-based authentication**
 - Store passwords securely using **bcrypt hashing** 
-- Persistent login using **AsyncStorage**
+- Persistent login using **Expo SecureStore**
 - Protected routes
 - API security via rate limiting and middleware
 - **Role-based access control (RBAC)** to restrict admin-only features
