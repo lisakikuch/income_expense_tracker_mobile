@@ -1,5 +1,5 @@
 const User = require("../models/userModel");
-const generateToken = require('../utils/jwt');
+const { generateToken, generateRefreshToken, verifyRefreshToken } = require('../utils/jwt');
 
 exports.registerUser = async ({ email, password }) => {
 
@@ -11,7 +11,6 @@ exports.registerUser = async ({ email, password }) => {
     const user = new User({ email, password });
     await user.save();
 
-    const token = generateToken(user._id);
     return {
         // Sanitize the user obejct
         user: {
@@ -19,7 +18,6 @@ exports.registerUser = async ({ email, password }) => {
             email: user.email,
             role: user.role
         },
-        token
     };
 };
 
@@ -31,8 +29,9 @@ exports.loginUser = async ({ email, password }) => {
         throw new Error("Invalid email or password");
     }
 
+    // Generate an access token & refresh token
     const token = generateToken(user._id);
-
+    const refreshToken = generateRefreshToken(user._id);
     return {
         // Sanitize the user obejct
         user: {
@@ -40,6 +39,23 @@ exports.loginUser = async ({ email, password }) => {
             email: user.email,
             role: user.role
         },
-        token
+        token,
+        refreshToken,
     };
+};
+
+exports.refreshAccessToken = async (refreshToken) => {
+
+    try {
+        const decoded = verifyRefreshToken(refreshToken);
+
+        const user = await User.findById(decoded.id);
+        if (!user) throw new Error("User not found");
+
+        const newAccessToken = generateToken(user._id);
+        return { token: newAccessToken };
+    
+    } catch (err) {
+        throw new Error("Invalid or expired refresh Token");
+    }
 };

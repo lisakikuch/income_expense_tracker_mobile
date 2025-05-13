@@ -14,6 +14,9 @@ import {
 import { useAuth } from "../../contexts/AuthContext";
 import { TransactionContext } from "../../contexts/TransactionContext";
 
+// Utils
+import { fetchWithRefresh } from "../../utils/fetchWithRefresh";
+
 // API
 import { API_URL } from '@env';
 
@@ -51,9 +54,8 @@ const TransactionDetails = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Logged in user info + token
-  const { user, token } = useAuth();
+  const { user, token, logout, updateToken } = useAuth();
   console.log("User: ", user);
-  console.log("Token: ", token);
 
   // Extract the transaction ID from the user object
   const transactionId = transaction?._id;
@@ -95,27 +97,32 @@ const TransactionDetails = ({ route, navigation }) => {
 
       console.log(`${API_URL}/transactions/${transactionId}`);
       // Send a PUT request to the backend to update the data + JWT
-      const res = await axios.put(
-        `${API_URL}/transactions/${transactionId}`,
-        {
-          type: transactionType,
-          amount: parseFloat(transactionAmount),
-          category: transactionCategory,
-          date: transactionDate.toISOString(),
-          note: transactionNote
+
+      const res = await fetchWithRefresh(
+        (newToken) => {
+          const finalToken = newToken || token;
+          return axios.put(
+            `${API_URL}/transactions/${transactionId}`,
+            {
+              type: transactionType,
+              amount: parseFloat(transactionAmount),
+              category: transactionCategory,
+              date: transactionDate.toISOString(),
+              note: transactionNote
+            },
+            {
+              headers: { Authorization: `Bearer ${finalToken}` }
+            }
+          );
         },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+        logout,
+        updateToken
       );
 
       if (res.status === 200) {
-        // Remove this line once the global states have been fully implemented
-        route.params?.onUpdate?.(res.data);
-
         // Dispatch the update to the global states
-        dispatch({ type: "UPDATE_TRANSACTION", payload: res.data });
-        console.log("After UPDATE_TRANSACTION: ", res.data);
+        dispatch({ type: "UPDATE_TRANSACTION", payload: res.data.transaction });
+        console.log("After UPDATE_TRANSACTION: ", res.data.transaction);
 
         Alert.alert("Success", "Transaction updated successfully!");
         navigation.goBack();
@@ -138,11 +145,18 @@ const TransactionDetails = ({ route, navigation }) => {
 
       // Send a DELETE request to the backend + JWT
       console.log(`${API_URL}/transactions/${transactionId}`);
-      const res = await axios.delete(
-        `${API_URL}/transactions/${transactionId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+      const res = await fetchWithRefresh(
+        (newToken) => {
+          const finalToken = newToken || token;
+          return axios.delete(
+            `${API_URL}/transactions/${transactionId}`,
+            {
+              headers: { Authorization: `Bearer ${finalToken}` }
+            }
+          )
+        },
+        logout,
+        updateToken
       );
 
       if (res.status === 200) {
@@ -262,6 +276,7 @@ const TransactionDetails = ({ route, navigation }) => {
                 },
               ]
             )}
+            disabled={isLoading}
           >
             <Text style={styles.buttonText}>Delete</Text>
           </TouchableOpacity>

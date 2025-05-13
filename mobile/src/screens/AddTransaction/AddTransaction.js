@@ -15,6 +15,9 @@ import {
 import { useAuth } from "../../contexts/AuthContext";
 import { TransactionContext } from "../../contexts/TransactionContext";
 
+// Utils
+import { fetchWithRefresh } from "../../utils/fetchWithRefresh";
+
 // API
 import { API_URL } from '@env';
 
@@ -35,12 +38,11 @@ import styles from "./AddTransaction.styles";
 
 const AddTransaction = () => {
 
-  const { dispatch } = useContext(TransactionContext);
+  const { state, dispatch } = useContext(TransactionContext);
 
   // Logged in user info + token
-  const { user, token } = useAuth();
+  const { user, token, logout, updateToken } = useAuth();
   console.log("User: ", user);
-  console.log("Token: ", token);
 
   // Extract the user ID from the user object
   const userId = user?._id;
@@ -52,9 +54,6 @@ const AddTransaction = () => {
   const [transactionDate, setTransactionDate] = useState(new Date());
   const [transactionNote, setTransactionNote] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
-
-  // Display activity indicator while loading
-  const [isLoading, setIsLoading] = useState(false);
 
   // Formatted toggle button items
   const formattedTransactionTypes = TRANSACTION_TYPES.map((item) => ({
@@ -88,29 +87,36 @@ const AddTransaction = () => {
     }
 
     try {
-      setIsLoading(true);
-      // Send a POST request to create a new transaction with logged in user ID + JWT
-      const res = await axios.post(
-        `${API_URL}/transactions/`,
-        {
-          userID: userId,
-          type: transactionType,
-          amount: parseFloat(transactionAmount),
-          category: transactionCategory,
-          date: new Date(transactionDate).toISOString(),
-          note: transactionNote
+      dispatch({ type: "SET_LOADING", payload: true });
+      // apiCallFn passed to fetchWithRefresh
+      const res = await fetchWithRefresh(
+        (newToken) => {
+          const finalToken = newToken || token;
+          return axios.post(
+            `${API_URL}/transactions/`,
+            {
+              userID: userId,
+              type: transactionType,
+              amount: parseFloat(transactionAmount),
+              category: transactionCategory,
+              date: new Date(transactionDate).toISOString(),
+              note: transactionNote
+            },
+            {
+              headers: { Authorization: `Bearer ${finalToken}` },
+            }
+          )
         },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+        logout,
+        updateToken
       );
 
       if (res.status === 201) {
         Alert.alert("Success", "Transaction added successfully!");
 
         // Dispatch to global state
-        dispatch({ type: "ADD_TRANSACTION", payload: res.data });
-        console.log("After ADD_TRANSACTION:", res.data);
+        dispatch({ type: "ADD_TRANSACTION", payload: res.data.transaction });
+        console.log("After ADD_TRANSACTION:", res.data.transaction);
 
         // Reset form
         setTransactionType(null);
@@ -120,12 +126,13 @@ const AddTransaction = () => {
         setTransactionNote("");
       }
 
+
     } catch (err) {
       console.error("Error while adding transaction: ", err.response?.data || err.message);
       Alert.alert("Adding transaction failed", err.response?.data?.message || "Something went wrong");
 
     } finally {
-      setIsLoading(false);
+      dispatch({ type: "SET_LOADING", payload: false });
     }
   }
 
@@ -197,7 +204,7 @@ const AddTransaction = () => {
             placeholder="Add a Note"
           />
 
-          {isLoading ? (
+          {state.isLoading ? (
             <ActivityIndicator />
           ) : (
             <TouchableOpacity

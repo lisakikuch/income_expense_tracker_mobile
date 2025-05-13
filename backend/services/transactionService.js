@@ -20,6 +20,7 @@ exports.createTransaction = async ({ userID, type, amount, category, date, note 
     });
 
     await transaction.save();
+    console.log("POST transaction: ", transaction);
     return transaction;
 };
 

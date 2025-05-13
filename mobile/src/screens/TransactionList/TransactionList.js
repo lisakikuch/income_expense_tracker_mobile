@@ -53,7 +53,7 @@ const TransactionList = ({ navigation, route }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   // Filter transaction data by category
-  const filteredTransactions = state.transactions.filter(transaction =>
+  const filteredTransactions = transactions.filter(transaction =>
     transactionCategory ? transaction.category === transactionCategory : true
   );
 

@@ -2,6 +2,7 @@ import React, { createContext, useReducer, useEffect } from 'react';
 import axios from 'axios';
 import { API_URL } from '@env';
 import { useAuth } from './AuthContext';
+import { fetchWithRefresh } from '../utils/fetchWithRefresh';
 
 export const TransactionContext = createContext();
 
@@ -62,9 +63,9 @@ function transactionReducer(state, action) {
 
 export const TransactionProvider = ({ children }) => {
     const [state, dispatch] = useReducer(transactionReducer, initialState);
-    
+
     // User data
-    const { token, user } = useAuth();
+    const { token, user, logout, updateToken } = useAuth();
 
     // Fetch transaction data
     const fetchTransactions = async () => {
@@ -75,18 +76,30 @@ export const TransactionProvider = ({ children }) => {
             const params = {
                 type: state.transactionType,
                 month: state.transactionMonth,
+                // 
                 userID: user?._id,
             };
 
-            const res = await axios.get(`${API_URL}/transactions`, {
-                params,
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const res = await fetchWithRefresh(
+                (newToken) => {
+                    const finalToken = newToken || token;
+                    return axios.get(
+                        `${API_URL}/transactions`,
+                        {
+                            params,
+                            headers: { Authorization: `Bearer ${finalToken}` },
+                        }
+                    );
+                },
+                logout,
+                updateToken
+            );
 
             dispatch({ type: "SET_TRANSACTIONS", payload: res.data.transactions });
 
-        } catch (error) {
-            dispatch({ type: "SET_ERROR", payload: error.message });
+        } catch (err) {
+            dispatch({ type: "SET_ERROR", payload: err.message });
+            console.error("Error fetching transactions:", err);
 
         } finally {
             dispatch({ type: "SET_LOADING", payload: false });

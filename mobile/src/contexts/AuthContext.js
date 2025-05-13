@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
     // Define variables holding a user object and its jwt received from backend
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
+    const [refreshToken, setRefreshToken] = useState(null);
 
     console.log("API_URL: ", API_URL);
 
@@ -21,11 +22,13 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         // Retrieve saved user & token from secure storagge (from the previous session)
         const loadStoreData = async () => {
-            const storedToken = await SecureStore.getItemAsync('jwtToken');
+            const storedToken = await SecureStore.getItemAsync('accessToken');
+            const storedRefreshToken = await SecureStore.getItemAsync('refreshToken');
             const storedUser = await SecureStore.getItemAsync('userData');
 
-            if (storedToken && storedUser) {
+            if (storedToken && storedRefreshToken && storedUser) {
                 setToken(storedToken);
+                setRefreshToken(storedRefreshToken);
                 setUser(JSON.parse(storedUser));
             }
         };
@@ -38,18 +41,21 @@ export const AuthProvider = ({ children }) => {
             const res = await axios.post(`${API_URL}/auth/login`, { email, password });
 
             // If successful:
-            const { user: fetchedUser, token } = res.data;
-            
-            await SecureStore.setItemAsync('jwtToken', token);
+            const { user: fetchedUser, token, refreshToken } = res.data;
+
+            // Access token
+            await SecureStore.setItemAsync('accessToken', token);
+            await SecureStore.setItemAsync('refreshToken', refreshToken);
             await SecureStore.setItemAsync('userData', JSON.stringify(fetchedUser));
 
             // Save user data and token
             setUser(fetchedUser);
             setToken(token);
+            setRefreshToken(refreshToken)
 
-            console.log(JSON.stringify(user));
+            console.log("Log in as: ", fetchedUser);
 
-        // If failed: throw an exception
+            // If failed: throw an exception
         } catch (err) {
             console.error("Login Failed: ", err);
             throw new Error("Invalid Credentials");
@@ -58,17 +64,29 @@ export const AuthProvider = ({ children }) => {
 
     // Logout
     const logout = async () => {
-        // Simply delete user data & token from secure storage
-        await SecureStore.deleteItemAsync('jwtToken');
-        await SecureStore.deleteItemAsync('userData');
-        setUser(null);
-        setToken(null);
+        try {
+            // Simply delete user data & token from secure storage
+            await SecureStore.deleteItemAsync('accessToken');
+            await SecureStore.deleteItemAsync('refreshToken');
+            await SecureStore.deleteItemAsync('userData');
+            setUser(null);
+            setToken(null);
+            setRefreshToken(null);
+        } catch (err) {
+            console.error("Failed to clear to tokens: ", err);
+        }
+    };
+
+    // Store a new token retrieved with refresh token
+    const updateToken = async (newToken) => {
+        await SecureStore.setItemAsync('accessToken', newToken);
+        setToken(newToken);
     };
 
     return (
         // Make the user, token and authentication functions (login/logout) available
         // to all child components
-        <AuthContext.Provider value={{ user, token, login, logout }}>
+        <AuthContext.Provider value={{ user, token, login, logout, updateToken }}>
             {children}
         </AuthContext.Provider>
     );
