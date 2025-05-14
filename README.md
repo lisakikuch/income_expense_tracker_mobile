@@ -1,4 +1,4 @@
-# 💰 Income Expense Tracker 
+# 💰 Clarity Financial
 A full-stack mobile finance tracking application that helps users securely manage their income and expenses, with access to monthly transaction history and financial summaries through an intuitive and user-friendly interface.
 
 ## 🚀 Live App
@@ -16,18 +16,18 @@ is available on [**Expo**](https://expo.dev/accounts/lisa55555/projects/mobile/b
 **UI Components**:
 - react-native-paper (Material Design components and icons)
 - react-native-element-dropdown (customizable dropdown menus)
-- react-native-chart-kit (charts and visualizations)
+- react-native-chart-kit (charts and visualizations) <br />
+
 **Deployment**: Expo <br />
-<br />
 
 ### 🗄️ Backend <br />
 **Framework**: Node.js + Express.js <br />
 **Database**: MongoDB Atlas (cloud) + Mongoose (ODM) <br />
 **Authentication & Security**:
-- JWT (token-based auth)
-- bcryptjs (password hashing)
-- express-rate-limit (rate limiting)
-- dotenv (env management) <br />
+- JWT (access & refresh tokens) - stateless authentication with automatic token renewal
+- bcryptjs – secure password hashing
+- express-rate-limit – API rate limiting to prevent abuse
+- dotenv – secure environment variable management <br />
 
 **Dev & Middleware Tools**:
 - Morgan (HTTP logging)
@@ -41,7 +41,8 @@ is available on [**Expo**](https://expo.dev/accounts/lisa55555/projects/mobile/b
 - Register and log in with secure **JWT-based authentication**
 - Store passwords securely using **bcrypt hashing** 
 - Persistent login using **Expo SecureStore**
-- Protected routes
+- Protected routes with token validation
+- Seamless session renewal with refresh token support
 - API security via rate limiting and middleware
 - **Role-based access control (RBAC)** to restrict admin-only features
 <br />

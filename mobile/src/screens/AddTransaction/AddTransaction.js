@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+// import { useContext } from "react";
 import {
   View,
   Text,
@@ -13,7 +14,8 @@ import {
 
 // Contexts
 import { useAuth } from "../../contexts/AuthContext";
-import { TransactionContext } from "../../contexts/TransactionContext";
+// import { TransactionContext } from "../../contexts/TransactionContext";
+import { useTransaction } from "../../contexts/TransactionContext";
 
 // Utils
 import { fetchWithRefresh } from "../../utils/fetchWithRefresh";
@@ -38,7 +40,8 @@ import styles from "./AddTransaction.styles";
 
 const AddTransaction = () => {
 
-  const { state, dispatch } = useContext(TransactionContext);
+  const { state, dispatch } = useTransaction();
+  // const { state, dispatch } = useContext(TransactionContext);
 
   // Logged in user info + token
   const { user, token, logout, updateToken } = useAuth();

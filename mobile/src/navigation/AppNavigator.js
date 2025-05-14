@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { TouchableOpacity, View, Text } from 'react-native';
 
 // Navigation
@@ -8,6 +8,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 // Context
 import { useAuth } from '../contexts/AuthContext';
+import { useTransaction } from '../contexts/TransactionContext';
 
 // Styling
 import globalStyles from '../styles/GlobalStyles';
@@ -59,10 +60,12 @@ const TransactionStackScreen = () => (
 // (Transaction Stack + Report screens + Add Transaction screen)
 const MainTabs = () => {
     const { logout } = useAuth();
+    const { resetTransactionState } = useTransaction();
 
     // Call logout function from Auth
     const handleLogout = async () => {
         await logout();
+        resetTransactionState();
     };
 
     const screenOptions = ({ route }) => ({

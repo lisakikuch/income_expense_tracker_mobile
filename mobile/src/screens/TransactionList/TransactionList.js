@@ -1,4 +1,5 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+// import {useContext} from "react";
 import {
   View,
   Text,
@@ -9,7 +10,8 @@ import {
 
 // Contexts
 import { useAuth } from "../../contexts/AuthContext";
-import { TransactionContext } from "../../contexts/TransactionContext";
+// import { TransactionContext } from "../../contexts/TransactionContext";
+import { useTransaction } from "../../contexts/TransactionContext";
 
 // Custom components
 import MonthPickerModal from "../../components/MonthPickerModal";
@@ -40,7 +42,8 @@ const TransactionList = ({ navigation, route }) => {
   console.log("userId: ", userId);
 
   // Global states
-  const { state, dispatch } = useContext(TransactionContext);
+  // const { state, dispatch } = useContext(TransactionContext);
+  const { state, dispatch } = useTransaction();
   const {
     transactions,
     transactionType,
@@ -77,7 +80,7 @@ const TransactionList = ({ navigation, route }) => {
   // Reset category when transactionType changes
   useEffect(() => {
     setTransactionCategory("");
-  }, [transactionType]);  
+  }, [transactionType]);
 
   return (
     <View style={styles.container}>

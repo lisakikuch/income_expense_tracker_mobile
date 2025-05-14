@@ -56,6 +56,12 @@ function transactionReducer(state, action) {
                 transactions: state.transactions.filter(transaction => transaction._id !== action.payload)
             };
 
+        case "RESET_TRANSACTION_STATE":
+            return {
+                ...initialState,
+                transactionMonth: `${new Date().getFullYear()}-${new Date().getMonth() + 1}`,
+            };
+
         default:
             return state;
     }
@@ -113,10 +119,16 @@ export const TransactionProvider = ({ children }) => {
         }
     }, [state.transactionType, state.transactionMonth, user, token]);
 
+    const resetTransactionState = () => {
+        dispatch({ type: "RESET_TRANSACTION_STATE" });
+    }
+
     return (
-        <TransactionContext.Provider value={{ state, dispatch, fetchTransactions }}>
+        <TransactionContext.Provider value={{ state, dispatch, fetchTransactions, resetTransactionState }}>
             {children}
         </TransactionContext.Provider>
     );
 
 };
+
+export const useTransaction = () => React.useContext(TransactionContext);

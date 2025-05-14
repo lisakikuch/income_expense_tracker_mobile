@@ -1,4 +1,5 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { useContext } from "react";
 import {
   View,
   Text,
@@ -12,7 +13,8 @@ import { PieChart } from "react-native-chart-kit";
 import { Ionicons } from "@expo/vector-icons";
 
 // Context
-import { TransactionContext } from "../../contexts/TransactionContext";
+// import { TransactionContext } from "../../contexts/TransactionContext";
+import { useTransaction } from "../../contexts/TransactionContext";
 
 // Custom components
 import MonthPickerModal from "../../components/MonthPickerModal";
@@ -24,7 +26,8 @@ import styles from "./Report.styles";
 const ReportScreen = () => {
 
   // Global states
-  const { state, dispatch } = useContext(TransactionContext);
+  // const { state, dispatch } = useContext(TransactionContext);
+  const { state, dispatch } = useTransaction();
   const {
     transactions,
     transactionType,
@@ -65,7 +68,7 @@ const ReportScreen = () => {
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
 
       <View style={styles.headerContainer}>
-      <Text style={styles.subHeader}>{transactionType}</Text>
+        <Text style={styles.subHeader}>{transactionType}</Text>
         {/*Month Selector */}
         <TouchableOpacity
           onPress={() => setShowMonthPicker(true)}

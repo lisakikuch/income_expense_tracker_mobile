@@ -1,4 +1,5 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
+// import { useContext } from "react";
 import {
   View,
   Text,
@@ -12,7 +13,8 @@ import {
 
 // Contexts
 import { useAuth } from "../../contexts/AuthContext";
-import { TransactionContext } from "../../contexts/TransactionContext";
+// import { TransactionContext } from "../../contexts/TransactionContext";
+import { useTransaction } from "../../contexts/TransactionContext";
 
 // Utils
 import { fetchWithRefresh } from "../../utils/fetchWithRefresh";
@@ -38,7 +40,8 @@ import styles from "./TransactionDetails.styles";
 const TransactionDetails = ({ route, navigation }) => {
 
   // Global states
-  const { dispatch } = useContext(TransactionContext);
+  // const { dispatch } = useContext(TransactionContext);
+  const { dispatch } = useTransaction();
 
   const { transaction } = route.params;
   console.log("Transaction Details - Route Params: ", transaction);
