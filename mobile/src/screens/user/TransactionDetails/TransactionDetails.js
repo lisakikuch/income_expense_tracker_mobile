@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// import { useContext } from "react";
 import {
   View,
   Text,
@@ -39,7 +38,6 @@ import styles from "./TransactionDetails.styles";
 const TransactionDetails = ({ route, navigation }) => {
 
   // Global states
-  // const { dispatch } = useContext(TransactionContext);
   const { dispatch } = useTransaction();
 
   const { transaction } = route.params;

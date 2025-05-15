@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+// TODO: Add refresh token support if admin features expand or token expiry becomes an issue
+
+import { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -8,6 +10,7 @@ import {
     Alert
 } from "react-native";
 import { useAuth } from "../../../contexts/AuthContext";
+import { fetchWithRefresh } from "../../../utils/fetchWithRefresh";
 import { API_URL } from '@env';
 
 // Styling
@@ -20,7 +23,7 @@ const UserList = ({ navigation }) => {
     const [users, setUsers] = useState([]);
 
     // Logged in user's info + jwt
-    const { user, token, logout } = useAuth();
+    const { user, token, logout, updateToken } = useAuth();
     console.log("User: ", user);
 
     // Extract the user ID from the user object above
@@ -37,11 +40,18 @@ const UserList = ({ navigation }) => {
 
             // Send a DELETE request to the backend + JWT
             console.log(`${API_URL}/users/${userIdToDelete}`);
-            const res = await axios.delete(
-                `${API_URL}/users/${userIdToDelete}`,
-                {
-                    headers: { Authorization: `Bearer ${token}` }
-                }
+            const res = await fetchWithRefresh(
+                (newToken) => {
+                    const finalToken = newToken || token;
+                    return axios.delete(
+                        `${API_URL}/users/${userIdToDelete}`,
+                        {
+                            headers: { Authorization: `Bearer ${finalToken}` }
+                        }
+                    )
+                },
+                logout,
+                updateToken
             );
 
             if (res.status === 200) {
@@ -70,11 +80,17 @@ const UserList = ({ navigation }) => {
                 setIsLoading(true);
 
                 // Send a GET request to get user data
-                const res = await axios.get(
-                    `${API_URL}/users`,
-                    { headers: { Authorization: `Bearer ${token}` } }
+                const res = await fetchWithRefresh(
+                    (newToken) => {
+                        const finalToken = newToken || token;
+                        return axios.get(
+                            `${API_URL}/users`,
+                            { headers: { Authorization: `Bearer ${finalToken}` } }
+                        );
+                    },
+                    logout,
+                    updateToken
                 );
-
                 // Save the fetched user data
                 setUsers(res.data);
                 console.log(res.data);
