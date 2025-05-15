@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { TouchableOpacity, View, Text } from 'react-native';
+import { useEffect } from 'react';
+import { TouchableOpacity, Text } from 'react-native';
 
 // Navigation
 import { createStackNavigator } from '@react-navigation/stack';
@@ -13,17 +13,21 @@ import { useTransaction } from '../contexts/TransactionContext';
 // Styling
 import globalStyles from '../styles/GlobalStyles';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
 
-// Screens
-import Welcome from '../screens/Welcome/Welcome';
-import SignUp from '../screens/SignUp/SignUp';
-import Login from '../screens/Login/Login';
-import TransactionList from '../screens/TransactionList/TransactionList';
-import TransactionDetails from '../screens/TransactionDetails/TransactionDetails';
-import ReportScreen from '../screens/Report/ReportScreen';
-import AddTransaction from '../screens/AddTransaction/AddTransaction';
-import UserList from '../screens/UserList/UserList';
+// Auth Screens
+import Welcome from '../screens/auth/Welcome/Welcome';
+import SignUp from '../screens/auth/SignUp/SignUp';
+import Login from '../screens/auth/Login/Login';
+
+// User Screens
+import UserTransactionList from '../screens/user/UserTransactionList/UserTransactionList';
+import ReportScreen from '../screens/user/Report/ReportScreen';
+import TransactionDetails from '../screens/user/TransactionDetails/TransactionDetails';
+import AddTransaction from '../screens/user/AddTransaction/AddTransaction';
+
+// Admin Screens
+import UserList from '../screens/admin/UserList/UserList';
+import AdminTransactionList from '../screens/admin/AdminTransactionList/AdminTransactionList';
 
 // Create Stacks and Tab
 const Stack = createStackNavigator();
@@ -45,7 +49,7 @@ const TransactionStackScreen = () => (
     <TransactionStack.Navigator screenOptions={{ headerShown: false }}>
         <TransactionStack.Screen
             name="TransactionMain"
-            component={TransactionList}
+            component={UserTransactionList}
             options={{ title: "Transaction List" }}
         />
         <TransactionStack.Screen
@@ -60,12 +64,10 @@ const TransactionStackScreen = () => (
 // (Transaction Stack + Report screens + Add Transaction screen)
 const MainTabs = () => {
     const { logout } = useAuth();
-    const { resetTransactionState } = useTransaction();
 
     // Call logout function from Auth
     const handleLogout = async () => {
         await logout();
-        resetTransactionState();
     };
 
     const screenOptions = ({ route }) => ({
@@ -83,7 +85,7 @@ const MainTabs = () => {
             let iconName;
             let color = focused ? 'darkblue' : 'gray';
 
-            if (route.name === 'TransactionList') {
+            if (route.name === 'UserTransactionList') {
                 iconName = 'list-alt';
             } else if (route.name === 'Report') {
                 iconName = 'book';
@@ -96,8 +98,8 @@ const MainTabs = () => {
     });
 
     return (
-        <Tab.Navigator initialRouteName="TransactionList" screenOptions={screenOptions}>
-            <Tab.Screen name="TransactionList" component={TransactionStackScreen} options={{ title: "Transaction List" }} />
+        <Tab.Navigator initialRouteName="UserTransactionList" screenOptions={screenOptions}>
+            <Tab.Screen name="UserTransactionList" component={TransactionStackScreen} options={{ title: "Transaction List" }} />
             <Tab.Screen name="Report" component={ReportScreen} options={{ title: "Report" }} />
             <Tab.Screen name="AddTransaction" component={AddTransaction} options={{ title: "Add Transaction" }} />
         </Tab.Navigator>
@@ -107,7 +109,7 @@ const MainTabs = () => {
 const AdminStack = () => (
     <Stack.Navigator initialRouteName="UserList" screenOptions={{ headerShown: true }}>
         <Stack.Screen component={UserList} name="UserList" options={{ title: "Manage Users" }} />
-        <Stack.Screen component={TransactionList} name="TransactionList" options={{ title: "User Transaction" }} />
+        <Stack.Screen component={AdminTransactionList} name="AdminTransactionList" options={{ title: "User Transaction" }} />
     </Stack.Navigator>
 );
 
@@ -115,6 +117,13 @@ const AdminStack = () => (
 // Otherwise bring the user back to the stack before authentication
 const AppNavigator = () => {
     const { user } = useAuth();
+    const { resetTransactionState } = useTransaction();
+
+    // Ensure reset transaction state on login/logout/switch
+    useEffect(() => {
+        resetTransactionState();
+    }, [user])
+
     return (
         <NavigationContainer>
             {!user ? <AuthStack /> :

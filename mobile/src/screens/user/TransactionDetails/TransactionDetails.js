@@ -12,12 +12,11 @@ import {
 } from "react-native";
 
 // Contexts
-import { useAuth } from "../../contexts/AuthContext";
-// import { TransactionContext } from "../../contexts/TransactionContext";
-import { useTransaction } from "../../contexts/TransactionContext";
+import { useAuth } from "../../../contexts/AuthContext";
+import { useTransaction } from "../../../contexts/TransactionContext";
 
 // Utils
-import { fetchWithRefresh } from "../../utils/fetchWithRefresh";
+import { fetchWithRefresh } from "../../../utils/fetchWithRefresh";
 
 // API
 import { API_URL } from '@env';
@@ -32,7 +31,7 @@ import {
   TRANSACTION_TYPES,
   INCOME_CATEGORIES,
   EXPENSE_CATEGORIES
-} from '../../constants/categories';
+} from '../../../constants/categories';
 
 // Styling
 import styles from "./TransactionDetails.styles";

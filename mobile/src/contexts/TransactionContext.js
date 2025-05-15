@@ -74,7 +74,7 @@ export const TransactionProvider = ({ children }) => {
     const { token, user, logout, updateToken } = useAuth();
 
     // Fetch transaction data
-    const fetchTransactions = async () => {
+    const fetchTransactions = async (userId = user?._id) => {
 
         dispatch({ type: "SET_LOADING", payload: true });
 
@@ -82,8 +82,7 @@ export const TransactionProvider = ({ children }) => {
             const params = {
                 type: state.transactionType,
                 month: state.transactionMonth,
-                // 
-                userID: user?._id,
+                userID: userId,
             };
 
             const res = await fetchWithRefresh(
@@ -112,13 +111,7 @@ export const TransactionProvider = ({ children }) => {
         };
     };
 
-    // Automatically refetch on filter change
-    useEffect(() => {
-        if (user && token && state.transactionMonth && state.transactionType) {
-            fetchTransactions();
-        }
-    }, [state.transactionType, state.transactionMonth, user, token]);
-
+    // Reset state when logging out
     const resetTransactionState = () => {
         dispatch({ type: "RESET_TRANSACTION_STATE" });
     }

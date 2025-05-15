@@ -7,7 +7,7 @@ import {
     ActivityIndicator,
     Alert
 } from "react-native";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { API_URL } from '@env';
 
 // Styling
@@ -22,7 +22,6 @@ const UserList = ({ navigation }) => {
     // Logged in user's info + jwt
     const { user, token, logout } = useAuth();
     console.log("User: ", user);
-    console.log("Token: ", token);
 
     // Extract the user ID from the user object above
     const userId = user?._id;
@@ -124,7 +123,7 @@ const UserList = ({ navigation }) => {
                                             onPress={() => {
                                                 console.log("selectedUserId: ", item._id)
                                                 // Need to update the path once Admin stack is created
-                                                navigation.navigate("TransactionList", {
+                                                navigation.navigate("AdminTransactionList", {
                                                     selectedUserId: item._id,
                                                 });
                                             }}

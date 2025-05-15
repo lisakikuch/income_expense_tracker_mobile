@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 
 // Context
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../../contexts/AuthContext';
 
 // API
 import { API_URL } from '@env';

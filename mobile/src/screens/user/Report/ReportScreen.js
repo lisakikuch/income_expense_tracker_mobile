@@ -14,11 +14,11 @@ import { Ionicons } from "@expo/vector-icons";
 
 // Context
 // import { TransactionContext } from "../../contexts/TransactionContext";
-import { useTransaction } from "../../contexts/TransactionContext";
+import { useTransaction } from "../../../contexts/TransactionContext";
 
 // Custom components
-import MonthPickerModal from "../../components/MonthPickerModal";
-import TransactionTypeToggle from "../../components/TransactionTypeToggle";
+import MonthPickerModal from "../../../components/MonthPickerModal";
+import TransactionTypeToggle from "../../../components/TransactionTypeToggle";
 
 // Styling
 import styles from "./Report.styles";

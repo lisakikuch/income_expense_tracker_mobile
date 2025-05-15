@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import {useContext} from "react";
 import {
   View,
   Text,
@@ -30,19 +29,13 @@ import {
 // Styling
 import styles from "./TransactionList.styles";
 
-const TransactionList = ({ navigation, route }) => {
+const TransactionList = ({ navigation, editable }) => {
 
   // Logged in user's info + jwt
   const { user } = useAuth();
   console.log("User: ", user);
 
-  // If there's a selectedUserId passed through navigation, use that. 
-  // If not, use the currently logged-in user’s ID.
-  const userId = route.params?.selectedUserId || user?._id;
-  console.log("userId: ", userId);
-
   // Global states
-  // const { state, dispatch } = useContext(TransactionContext);
   const { state, dispatch } = useTransaction();
   const {
     transactions,
@@ -151,7 +144,7 @@ const TransactionList = ({ navigation, route }) => {
                     {item.note ? <Text>{item.note}</Text> : null}
                     <Text>${item.amount.toFixed(2)}</Text>
                   </View>
-                  {userId === user._id && (
+                  {editable && (
                     <TouchableOpacity
                       style={styles.editButton}
                       // Navigate to TransactionDetails screen with the selected item object
