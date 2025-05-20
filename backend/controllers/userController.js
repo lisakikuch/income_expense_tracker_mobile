@@ -1,11 +1,15 @@
 const User = require("../models/userModel");
+const userService = require('../services/userService');
 
 // Get all users (Admin only)
 exports.getAllUsers = async (req, res) => {
     try {
-        const users = await User.find().select("-password"); // Exclude password
-        res.json(users);
+        const { page = 1, limit = 10 } = req.query;
+        const data = await userService.getAllUsers({ page, limit });
+        res.json(data);
+
     } catch (err) {
+        console.error("Error in getAllUsers: ", err);
         res.status(500).json({ message: "Failed to fetch users" });
     }
 };
@@ -34,6 +38,6 @@ exports.deleteUser = async (req, res) => {
 
     } catch (err) {
         onsole.error("Error in deleteUser:", err);
-    res.status(500).json({ message: "Failed to delete user", error: err.message });
+        res.status(500).json({ message: "Failed to delete user", error: err.message });
     }
 };

@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         elevation: 5,
     },
-    transactionDate: {
-        fontWeight: "bold",
+    cardText: {
+        marginVertical: 2,
     },
     editButton: {
         marginTop: 10,
@@ -34,6 +34,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
         alignSelf: "flex-end",
     },
+    loadMoreButton: {
+        marginTop: 5,
+        backgroundColor: "lightgrey",
+        padding: 8,
+        borderRadius: 5,
+        alignItems: "center",
+    },
     editButtonText: {
         color: "white",
         fontWeight: "bold",
@@ -42,6 +49,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        justifyContent: "space-between",
+        alignItems: 'center',
+        paddingHorizontal: 5,
+        marginBottom: 5,
     },
 });
 

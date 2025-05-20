@@ -13,7 +13,6 @@ import { PieChart } from "react-native-chart-kit";
 import { Ionicons } from "@expo/vector-icons";
 
 // Context
-// import { TransactionContext } from "../../contexts/TransactionContext";
 import { useTransaction } from "../../../contexts/TransactionContext";
 
 // Custom components
@@ -26,7 +25,6 @@ import styles from "./Report.styles";
 const ReportScreen = () => {
 
   // Global states
-  // const { state, dispatch } = useContext(TransactionContext);
   const { state, dispatch } = useTransaction();
   const {
     transactions,
