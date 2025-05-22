@@ -1,8 +1,13 @@
 # 💰 Clarity Financial
 A full-stack mobile finance tracking application that helps users securely manage their income and expenses, with access to monthly transaction history and financial summaries through an intuitive and user-friendly interface.
 
-## 🚀 Live App
-is available on [**Expo**](https://expo.dev/accounts/lisa55555/projects/mobile/builds/b610ea5a-00d6-409e-8170-16b20d70237c)
+## 🚀 Demo
+Deployed mobile app: [**Expo**](https://expo.dev/accounts/lisa55555/projects/mobile/builds/b610ea5a-00d6-409e-8170-16b20d70237c)
+<br />
+Recordings:
+- [**Sign-up**](https://drive.google.com/file/d/1LmtsdzZmPTvJM9cLomG_4QB-nCKhJaaH/view?usp=sharing)
+- [**Regular user**](https://drive.google.com/file/d/1JkiBRDTFwqix41LTuUlpahmRXR0Glppr/view?usp=sharing)
+- [**Admin user**](https://drive.google.com/file/d/12OYa7_1yeaDDSfPGaGSAJ927gys_qUMS/view?usp=sharing)
 
 ## 🧰 Tech Stack
 ### 📱 Frontend (Mobile) <br />
@@ -72,6 +77,7 @@ If you'd like to run it locally: <br>
 PORT=your_port_number
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
+JWT_REFRESH_SECRET=your_refresh_secret
 ```
 
 2. Then run the following commands:
@@ -108,53 +114,73 @@ npx expo start
 
 ## 🗂 Project Structure
 ```bash
-income_expense_tracker_mobile/
-# Backend
-backend/
-├── config/
-│   └── db.js               # MongoDB connection setup
-├── controllers/            # Logic for handling requests
-│   ├── authController.js
-│   ├── transactionController.js
-│   └── userController.js
-├── middleware/
-│   ├── authMiddleware.js   # JWT authentication and role checking
-|   ├── isAdmin.js          # Restrict access to admin-only routes
-|   ├── rateLimiter.js      # Limits repeated requests to prevent abuse
-├── models/                 # Mongoose schemas for MongoDB
-│   ├── transactionModel.js
-│   └── userModel.js
-├── routes/                 # Defines API endpoints
-│   ├── authRoutes.js
-│   ├── transactionRoutes.js
-│   └── userRoutes.js
-├── utils/
-│   └── jwt.js              # Generates JWT tokens for authenticated users
-├── .env
-├── index.js                # Entry point of the Express server
-# Frontend 
-frontend/                   # React (In Progress)
-|
-mobile/                     # React Native
-├── .expo/
-├── assets/
-├── contexts/
-│   └── AuthContext.js      # Handles user authentication state
-├── dist/
-├── navigation/
-│   └── AppNavigator.js     # React Navigation setup
-├── screens/
-│   ├── AddTransaction.js
-│   ├── Login.js
-│   ├── ReportScreen.js
-│   ├── SignUp.js
-│   ├── TransactionDetails.js
-│   ├── TransactionList.js
-|   ├── UserList.js         # Admin-only
-│   └── Welcome.js          # Landing screen
-├── shared/                 # Styling
-├── .env
-├── App.js                  # Root component that sets up navigation and global authentication context
+.
+├── backend
+│   ├── config
+│   │   └── db.js                       # MongoDB connection setup
+│   ├── controllers                     # Logic for handling requests
+│   │   ├── authController.js
+│   │   ├── transactionController.js
+│   │   └── userController.js
+│   ├── middleware
+│   │   ├── authMiddleware.js           # JWT authentication and role checking
+│   │   ├── errorHandler.js
+│   │   ├── isAdmin.js                  # Restrict access to admin-only routes
+│   │   └── rateLimiter.js              # Limits repeated requests to prevent abuse
+│   ├── models                          # Mongoose schemas for MongoDB
+│   │   ├── transactionModel.js
+│   │   └── userModel.js
+│   ├── routes                          # Defines REST API endpoints
+│   │   ├── authRoutes.js
+│   │   ├── transactionRoutes.js
+│   │   └── userRoutes.js
+│   ├── services                        # Reusable business logic (used by controllers)
+│   │   ├── authService.js
+│   │   ├── transactionService.js
+│   │   └── userService.js
+│   ├── utils
+│   │   └── jwt.js                      # Generates JWT tokens for authenticated users
+│   ├── .env
+│   ├── index.js                        # Entry point of the Express server
+│   ├── package.json
+│   └── package-lock.json
+│
+├── mobile
+│   ├── .expo
+│   ├── dist
+│   ├── node_modules
+│   ├── src
+│   │   ├── assets
+│   │   ├── components
+│   │   │   └── TransactionList
+│   │   │       ├── MonthPickerModal.js
+│   │   │       └── TransactionTypeToggle.js
+│   │   ├── constants
+│   │   │   └── categories.js
+│   │   ├── contexts
+│   │   │   ├── AuthContext.js          # Global auth state using Context API
+│   │   │   └── TransactionContext.js   # Global transaction state
+│   │   ├── navigation
+│   │   │   └── AppNavigator.js         # Navigation structure using React Navigation
+│   │   ├── screens
+│   │   │   ├── admin                   # Admin-only views
+│   │   │   │   ├── AdminTransactionList
+│   │   │   │   └── UserList
+│   │   │   ├── auth
+│   │   │   │   ├── Login
+│   │   │   │   ├── SignUp
+│   │   │   │   └── Welcome             # Intro screen shown at first launch
+│   │   │   └── user
+│   │   │       ├── AddTransaction
+│   │   │       ├── Report
+│   │   │       ├── TransactionDetails
+│   │   │       └── UserTransactionList
+│   │   ├── styles                      # Shared styling modules
+│   │   └── utils
+│   │       └── fetchWithRefresh.js     # Helper for refreshing tokens on expired requests
+│   └── .env
+│   └── App.js                          # Root component with navigation and auth setup                                 
+
 ```
 
 ## 🔐 License
