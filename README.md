@@ -41,10 +41,11 @@ is available on [**Expo**](https://expo.dev/accounts/lisa55555/projects/mobile/b
 - Register and log in with secure **JWT-based authentication**
 - Store passwords securely using **bcrypt hashing** 
 - Persistent login using **Expo SecureStore**
-- Protected routes with token validation
-- Seamless session renewal with refresh token support
-- API security via rate limiting and middleware
+- **Protected routes** with token validation
+- Seamless session renewal with **refresh token** support
+- API security via **rate limiting** and **middleware**
 - **Role-based access control (RBAC)** to restrict admin-only features
+- Efficient user management with **server-side pagination** in the admin UserList
 <br />
 
 ### ✅ Regular User 
@@ -53,7 +54,7 @@ is available on [**Expo**](https://expo.dev/accounts/lisa55555/projects/mobile/b
 - Filter transactions by type, month, and category
 
 ### 👥 Admin User
-- View a list of all users
+- View a paginated list of all users
 - Delete users
 - Access and view data of regular users
 
@@ -155,3 +156,7 @@ mobile/                     # React Native
 ├── .env
 ├── App.js                  # Root component that sets up navigation and global authentication context
 ```
+
+## 🔐 License
+This project is licensed for personal and educational use only.  
+See [LICENSE.txt](./LICENSE.txt) for details.

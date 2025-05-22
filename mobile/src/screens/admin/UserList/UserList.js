@@ -159,7 +159,6 @@ const UserList = ({ navigation }) => {
                                             // Navigate to selected user's TransactionList screen with the selected user's object ID
                                             onPress={() => {
                                                 console.log("selectedUserId: ", item._id)
-                                                // Need to update the path once Admin stack is created
                                                 navigation.navigate("AdminTransactionList", {
                                                     selectedUserId: item._id,
                                                 });
