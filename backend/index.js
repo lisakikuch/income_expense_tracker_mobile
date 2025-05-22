@@ -1,8 +1,13 @@
 // .env
 require('dotenv').config();
 
-// Middleware
 const express = require('express');
+const app = express();
+
+// Trust Render or other reverse proxies
+app.set('trust proxy', 1);
+
+// Middleware
 const cors = require('cors');
 const morgan = require('morgan');
 const { generalLimiter } = require('./middleware/rateLimiter');
@@ -15,8 +20,6 @@ const transactionRoutes = require('./routes/transactionRoutes');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 
-const app = express();
-
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
@@ -25,6 +28,7 @@ if (!MONGO_URI) {
     process.exit(1);
 }
 
+// DB connection
 connectDB(MONGO_URI)
     .then(() => console.log("MongoDB Connected"))
     .catch((err) => {
@@ -32,10 +36,23 @@ connectDB(MONGO_URI)
         process.exit(1);
     });
 
-// Allow other devices on the same network accessible to the server
+// CORS config
+const allowedOrigins = [
+  'https://studio.expo.dev',
+  'exp://',
+  'https://u.expo.dev',
+];
+
 app.use(cors({
-    origin: [/^http:\/\/192\.168\.\d+\.\d+:\d+$/, 'http://localhost:3000'],
-    credentials: true
+  origin: function (origin, callback) {
+    console.log('CORS request origin:', origin);
+    if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
 }));
 
 app.use(express.urlencoded({ extended: true }));
@@ -53,5 +70,5 @@ app.get('/', (req, res) => {
 
 // Allow other devices on the same network accessible to the server by 0.0.0.0
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
