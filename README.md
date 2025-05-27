@@ -2,8 +2,14 @@
 A full-stack mobile finance tracking application that helps users securely manage their income and expenses, with access to monthly transaction history and financial summaries through an intuitive and user-friendly interface.
 
 ## 🚀 Demo
-Deployed mobile app: [**Expo**](https://expo.dev/accounts/lisa55555/projects/mobile/builds/b610ea5a-00d6-409e-8170-16b20d70237c)
+Deployed mobile app: [**Expo**](https://expo.dev/preview/update?message=Updated%20README%20%26%20LICENSE&updateRuntimeVersion=1.0.0&createdAt=2025-05-22T21%3A40%3A11.245Z&slug=exp&projectId=7d0e5ea6-905d-4223-b2ab-69f2b0b735a5&group=f796e013-7da4-401b-a317-6b24b103393a)
 <br />
+This app is connected to a live demo backend hosted on [**Render**](https://income-expense-trakcer-mobile-server.onrender.com).
+- Please DO NOT submit real personal data.
+- The backend is rate-limited and monitored for abuse.
+
+Alternatively, you can clone this repository and run it locally using your own server setup by following the steps outlined in the **Setup** section.
+
 Recordings:
 - [**Sign-up**](https://drive.google.com/file/d/1LmtsdzZmPTvJM9cLomG_4QB-nCKhJaaH/view?usp=sharing)
 - [**Regular user**](https://drive.google.com/file/d/1JkiBRDTFwqix41LTuUlpahmRXR0Glppr/view?usp=sharing)
@@ -65,12 +71,6 @@ Recordings:
 
 ## 🛠️ Setup
 ### 🗄️ Backend
-
-The backend is deployed on **Render**:<br>
-🔗 [https://income-expense-trakcer-mobile-server.onrender.com](https://income-expense-trakcer-mobile-server.onrender.com)<br>
-
-If you'd like to run it locally: <br>
-
 1. Create a .env file in /backend with:
 
 ```bash
@@ -92,13 +92,14 @@ node index.js
 If you'd like to run the mobile app locally:<br>
 
 1. Create a .env file in /mobile with:
-
+- Live demo server hosted on Render:
 ```bash
 API_URL=https://income-expense-trakcer-mobile-server.onrender.com
 ```
 
 or
 
+- Your local server
 ```bash
 API_URL=http://localhost:your_port_number
 ```
@@ -152,9 +153,9 @@ npx expo start
 │   ├── src
 │   │   ├── assets
 │   │   ├── components
-│   │   │   └── TransactionList
-│   │   │       ├── MonthPickerModal.js
-│   │   │       └── TransactionTypeToggle.js
+│   │   │   ├── TransactionList
+│   │   │   ├── MonthPickerModal.js
+│   │   │   └── TransactionTypeToggle.js
 │   │   ├── constants
 │   │   │   └── categories.js
 │   │   ├── contexts
